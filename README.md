@@ -189,6 +189,27 @@ pytest tests/ -v
 
 ---
 
+## ☁️ Cloudflare Pages / Workers Deployment
+
+SkillPulse is fully pre-configured for deployment to **Cloudflare Pages**:
+
+### Build Settings in Cloudflare Pages Dashboard
+| Setting | Recommended Value |
+|---|---|
+| **Framework preset** | `Vite` |
+| **Root directory** | `frontend` |
+| **Build command** | `npm run build` |
+| **Build output directory** | `dist` |
+| **Node.js Version** | `20` (set `NODE_VERSION=20` under environment variables) |
+
+### Cloudflare Environment Variables
+Configure under **Project Settings → Environment Variables**:
+- `VITE_API_BASE_URL`: (Optional) URL of your hosted backend (e.g. `https://api.skillpulse.example.com`).
+- `BACKEND_URL`: (Optional) For the built-in Cloudflare Pages Function `/api/*` reverse proxy (`frontend/functions/api/[[path]].js`).
+- `VITE_BASE_PATH`: (Optional) Default `/`.
+
+---
+
 ## 📄 License
 
 SkillPulse is released under the MIT License.

@@ -1,7 +1,10 @@
 import axios from 'axios';
 
+const rawBaseUrl = import.meta.env.VITE_API_BASE_URL || '';
+const apiBaseUrl = rawBaseUrl.replace(/\/+$/, '');
+
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: apiBaseUrl ? `${apiBaseUrl}/api` : '/api',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -77,7 +80,7 @@ export const providerAPI = {
     api.post('/providers/import-trainees', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     }),
-  downloadSampleCsvUrl: '/api/providers/sample-csv',
+  downloadSampleCsvUrl: apiBaseUrl ? `${apiBaseUrl}/api/providers/sample-csv` : '/api/providers/sample-csv',
 };
 
 export const adminAPI = {

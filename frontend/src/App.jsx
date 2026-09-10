@@ -5,6 +5,7 @@ import { ToastProvider } from './contexts/ToastContext';
 
 import { PublicLayout } from './layouts/PublicLayout';
 import { DashboardLayout } from './layouts/DashboardLayout';
+import { AdminLayout } from './layouts/AdminLayout';
 
 import { LandingPage } from './pages/LandingPage';
 import { LoginPage } from './pages/LoginPage';
@@ -58,7 +59,7 @@ export function App() {
               <Route path="/consent" element={<ConsentPage />} />
             </Route>
 
-            {/* Dashboard Layout Routes */}
+            {/* Regular Dashboard Layout Routes */}
             <Route element={<DashboardLayout />}>
               <Route
                 path="/trainee/dashboard"
@@ -84,6 +85,10 @@ export function App() {
                   </ProtectedRoute>
                 }
               />
+            </Route>
+
+            {/* Admin Layout Routes */}
+            <Route element={<AdminLayout />}>
               <Route
                 path="/admin/dashboard"
                 element={
@@ -92,6 +97,7 @@ export function App() {
                   </ProtectedRoute>
                 }
               />
+              {/* Additional admin pages can be added here */}
             </Route>
 
             {/* 404 Route */}
