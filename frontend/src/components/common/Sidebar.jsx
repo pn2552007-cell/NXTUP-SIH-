@@ -10,12 +10,12 @@ import {
 } from 'lucide-react';
 
 export const Sidebar = () => {
-  const { role, skillpulseId } = useAuth();
+  const { role, nextupId } = useAuth();
 
   const navItems = {
     TRAINEE: [
       { to: '/trainee/dashboard', label: 'My Journey & Outcomes', icon: LayoutDashboard },
-      { to: '/consent', label: 'Consent & SkillPulse ID', icon: ShieldCheck },
+      { to: '/consent', label: 'Consent & NEXTUP ID', icon: ShieldCheck },
     ],
     PROVIDER: [
       { to: '/provider/dashboard', label: 'Provider Overview', icon: Building2 },
@@ -41,9 +41,9 @@ export const Sidebar = () => {
             <span className="w-2 h-2 rounded-full bg-emerald-400" />
             {role?.replace('_', ' ')}
           </div>
-          {skillpulseId && (
+          {nextupId && (
             <div className="text-[11px] font-mono text-emerald-400 mt-1 truncate">
-              ID: {skillpulseId}
+              ID: {nextupId}
             </div>
           )}
         </div>
@@ -82,7 +82,7 @@ export const Sidebar = () => {
           <div className="px-3 py-2 text-xs text-slate-400 space-y-2">
             <div className="flex items-center gap-2 text-slate-300">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-              <span>Unified SkillPulse ID</span>
+              <span>Unified NEXTUP ID</span>
             </div>
             <div className="flex items-center gap-2 text-slate-300">
               <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
@@ -102,7 +102,7 @@ export const Sidebar = () => {
 
       {/* Footer Info */}
       <div className="p-3 rounded-xl bg-slate-900/40 border border-slate-800/60 text-center">
-        <div className="text-[11px] font-medium text-slate-300">SkillPulse Platform</div>
+        <div className="text-[11px] font-medium text-slate-300">NEXTUP Platform</div>
         <div className="text-[10px] text-slate-400 mt-0.5">Longitudinal Skilling & Outcomes</div>
       </div>
     </aside>

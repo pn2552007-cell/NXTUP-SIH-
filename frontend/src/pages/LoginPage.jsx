@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
-import { Activity, Mail, Lock, ArrowRight, Loader2, ShieldCheck } from 'lucide-react';
+import { Activity, Mail, Lock, ArrowRight, Loader2, ShieldCheck, Sparkles, UserCheck } from 'lucide-react';
 
 export const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -13,6 +13,12 @@ export const LoginPage = () => {
   const { login } = useAuth();
   const { addToast } = useToast();
   const navigate = useNavigate();
+
+  const handleQuickFill = (demoEmail, demoPass) => {
+    setEmail(demoEmail);
+    setPassword(demoPass);
+    setErrorMsg('');
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -61,10 +67,52 @@ export const LoginPage = () => {
           <div className="inline-flex p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 mb-2">
             <Activity className="w-8 h-8" />
           </div>
-          <h2 className="text-2xl font-bold text-white tracking-tight">Sign In to SkillPulse</h2>
+          <h2 className="text-2xl font-bold text-white tracking-tight">Sign In to NEXTUP</h2>
           <p className="text-xs text-slate-400">
-            Access your longitudinal skilling outcome tracking platform.
+            AI-Powered Skilling Outcome Platform
           </p>
+        </div>
+
+        {/* Quick Demo Logins */}
+        <div className="glass-panel rounded-2xl p-4 border-slate-800 space-y-2.5">
+          <div className="flex items-center gap-1.5 text-xs font-semibold text-emerald-400">
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>Quick Demo Presets (1-Click Fill)</span>
+          </div>
+          <div className="grid grid-cols-2 gap-2 text-xs">
+            <button
+              type="button"
+              onClick={() => handleQuickFill('trainee@nextup.demo', 'NextUp@Demo2026!')}
+              className="px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-slate-300 hover:text-white text-left transition-all flex items-center justify-between"
+            >
+              <span>🎓 Trainee</span>
+              <span className="text-[10px] text-emerald-400 font-mono">Fill</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => handleQuickFill('provider@nextup.demo', 'NextUp@Demo2026!')}
+              className="px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-purple-500/40 text-slate-300 hover:text-white text-left transition-all flex items-center justify-between"
+            >
+              <span>🏫 Provider</span>
+              <span className="text-[10px] text-purple-400 font-mono">Fill</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => handleQuickFill('employer@nextup.demo', 'NextUp@Demo2026!')}
+              className="px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-blue-500/40 text-slate-300 hover:text-white text-left transition-all flex items-center justify-between"
+            >
+              <span>💼 Employer</span>
+              <span className="text-[10px] text-blue-400 font-mono">Fill</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => handleQuickFill('admin@nextup.demo', 'NextUp@Demo2026!')}
+              className="px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-cyan-500/40 text-slate-300 hover:text-white text-left transition-all flex items-center justify-between"
+            >
+              <span>🏛️ Admin / Govt</span>
+              <span className="text-[10px] text-cyan-400 font-mono">Fill</span>
+            </button>
+          </div>
         </div>
 
         {errorMsg && (
@@ -84,7 +132,7 @@ export const LoginPage = () => {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="name@organization.com"
+                placeholder="name@nextup.demo"
                 className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 text-sm text-white placeholder-slate-500 outline-none transition-all"
               />
             </div>
@@ -119,7 +167,7 @@ export const LoginPage = () => {
               </>
             ) : (
               <>
-                <span>Sign In</span>
+                <span>Sign In to NEXTUP</span>
                 <ArrowRight className="w-4 h-4" />
               </>
             )}
@@ -131,7 +179,7 @@ export const LoginPage = () => {
           <p>
             Don't have an account yet?{' '}
             <Link to="/register" className="text-emerald-400 hover:underline font-semibold">
-              Create an account
+              Create a NEXTUP account
             </Link>
           </p>
           <div className="flex items-center justify-center gap-2 pt-2 text-[11px] text-slate-400">

@@ -33,13 +33,14 @@ export const SkillGapCard = ({ traineeId, traineeSkills = [], courseSkills = [] 
       setAnalysis(res.data);
     } catch (err) {
       console.error('Skill gap analysis error:', err);
+      setAnalysis({ available: false, error: 'Analysis could not be completed. Please retry.' });
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    runAnalysis(selectedRole);
+    if (traineeId) runAnalysis(selectedRole);
   }, [selectedRole, traineeId, traineeSkills.length]);
 
   return (
@@ -109,11 +110,11 @@ export const SkillGapCard = ({ traineeId, traineeSkills = [], courseSkills = [] 
           )}
 
           {/* Top Score Banner */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {analysis.available && <><div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
               <div className="text-xs text-slate-400 font-medium">Job Readiness Score</div>
               <div className="text-2xl font-bold text-emerald-400 mt-1">
-                {analysis.job_readiness || Math.round(100 - (analysis.skill_gap_score || 0))}%
+                {analysis.job_readiness ?? 'Not available'}%
               </div>
               <div className="text-[11px] text-slate-400 mt-0.5">
                 Target: {analysis.target_role}
@@ -147,7 +148,7 @@ export const SkillGapCard = ({ traineeId, traineeSkills = [], courseSkills = [] 
             <div className="p-4 rounded-xl bg-slate-900/40 border border-emerald-500/20">
               <div className="flex items-center gap-2 text-xs font-bold text-emerald-400 mb-3">
                 <CheckCircle2 className="w-4 h-4" />
-                <span>Verified Strengths & Competencies ({(analysis.strengths || analysis.matched_skills || []).length})</span>
+                <span>AI-matched skills, not independently verified ({(analysis.strengths || analysis.matched_skills || []).length})</span>
               </div>
               <div className="flex flex-wrap gap-2">
                 {(analysis.strengths && analysis.strengths.length > 0) ? (
@@ -212,7 +213,8 @@ export const SkillGapCard = ({ traineeId, traineeSkills = [], courseSkills = [] 
                 </div>
               )}
             </div>
-          </div>
+          </div></>}
+          <button type="button" onClick={() => runAnalysis(selectedRole)} disabled={loading} className="text-cyan-300 underline">Run live analysis again</button>
         </div>
       ) : null}
     </div>

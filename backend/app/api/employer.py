@@ -11,6 +11,7 @@ from app.models.models import (
 from app.schemas.schemas import EmployerVerificationRequest
 from app.auth.jwt_handler import get_current_user
 from app.utils.audit import log_audit_event
+from app.services.outcome_access import employer_matches
 
 router = APIRouter(prefix="/employer", tags=["Employer Verification & Talent"])
 
@@ -24,9 +25,13 @@ def calculate_verification_confidence(
 ) -> float:
     """
     Computes confidence score derived from actual deterministic verification logic.
+    CORRECTION_REQUESTED keeps the baseline self-reported confidence so the
+    trainee can correct the record without it looking employer-confirmed.
     """
     if status == "REJECTED":
         return 0.0
+    if status == "CORRECTION_REQUESTED":
+        return 0.50
 
     score = 0.50  # Baseline self-reported confidence
 
@@ -56,12 +61,12 @@ def get_employer_dashboard(
     emp_id = employer.id if employer else None
     company_name = employer.company_name if employer else "All Employers (Admin View)"
 
-    query = db.query(EmploymentRecord)
+    query = db.query(EmploymentRecord).join(Trainee).filter(Trainee.consent_given == True)
     if emp_id:
         # Match by employer_id or company name
         query = query.filter(
             (EmploymentRecord.employer_id == emp_id) |
-            (EmploymentRecord.employer_name.ilike(company_name))
+            ((EmploymentRecord.employer_id.is_(None)) & (EmploymentRecord.employer_name.ilike(company_name)))
         )
 
     pending_records = query.filter(EmploymentRecord.verification_status == "PENDING").all()
@@ -70,11 +75,13 @@ def get_employer_dashboard(
     def format_item(rec: EmploymentRecord):
         tr = rec.trainee
         t_rec = db.query(TrainingRecord).filter(TrainingRecord.trainee_id == tr.id).first() if tr else None
+        nid = (tr.nextup_id if tr and tr.nextup_id else (tr.skillpulse_id if tr else None))
         return {
             "id": rec.id,
             "employment_record_id": rec.id,
             "trainee_id": tr.id if tr else None,
             "trainee_name": tr.full_name if tr and tr.consent_given else "Candidate Profile",
+            "nextup_id": nid,
             "skillpulse_id": tr.skillpulse_id if tr else None,
             "course_name": t_rec.course.course_name if t_rec and t_rec.course else None,
             "reported_job": rec.job_title,
@@ -82,8 +89,14 @@ def get_employer_dashboard(
             "reported_salary": rec.starting_salary,
             "reported_location": f"{rec.location_city or ''}, {rec.location_state or ''}".strip(", "),
             "verification_status": rec.verification_status,
+            "verification_label": (
+                "Employer verified" if rec.verification_status == "VERIFIED"
+                else "Rejected by employer" if rec.verification_status == "REJECTED"
+                else "Correction requested" if rec.verification_status == "CORRECTION_REQUESTED"
+                else "Self-reported — awaiting employer verification"
+            ),
             "confidence_score": rec.confidence_score,
-            "created_at": rec.created_at
+            "created_at": rec.created_at.isoformat() if rec.created_at else None,
         }
 
     # Consenting candidate pool
@@ -110,11 +123,22 @@ def verify_employment_record(
         raise HTTPException(status_code=404, detail="Employment record not found")
 
     employer = db.query(Employer).filter(Employer.user_id == current_user.id).first()
-    employer_id = employer.id if employer else (emp_record.employer_id or 1)
+    if current_user.role != "EMPLOYER" or not employer_matches(employer, emp_record):
+        raise HTTPException(403, "Only the assigned employer can verify this report.")
+    if not emp_record.trainee.consent_given:
+        raise HTTPException(403, "Active trainee consent is required.")
+    if emp_record.status != "EMPLOYED":
+        raise HTTPException(400, "Only employed reports can be employer-verified.")
+    if emp_record.verification_status != "PENDING":
+        raise HTTPException(409, "This report has already been reviewed. A new trainee report is required.")
+    employer_id = employer.id
+    emp_record.employer_id = employer.id
 
     status_upper = action.status.upper()
-    if status_upper not in ("VERIFIED", "REJECTED"):
-        raise HTTPException(status_code=400, detail="Status must be either VERIFIED or REJECTED.")
+    if status_upper not in ("VERIFIED", "REJECTED", "CORRECTION_REQUESTED"):
+        raise HTTPException(status_code=400, detail="Status must be VERIFIED, REJECTED, or CORRECTION_REQUESTED.")
+    if status_upper != "VERIFIED" and not (action.notes or "").strip():
+        raise HTTPException(400, "Explain what was rejected or needs correction.")
 
     calculated_confidence = calculate_verification_confidence(
         status=status_upper,
@@ -125,9 +149,14 @@ def verify_employment_record(
         employer_is_verified=employer.is_verified if employer else True
     )
 
-    emp_record.verification_status = status_upper
-    emp_record.verified_at = datetime.utcnow()
-    emp_record.confidence_score = calculated_confidence
+    # CORRECTION_REQUESTED keeps the record actionable without overwriting verified wage facts.
+    if status_upper == "CORRECTION_REQUESTED":
+        emp_record.verification_status = "CORRECTION_REQUESTED"
+        emp_record.confidence_score = 0.50
+    else:
+        emp_record.verification_status = status_upper
+        emp_record.verified_at = datetime.utcnow() if status_upper == "VERIFIED" else None
+        emp_record.confidence_score = calculated_confidence
 
     if status_upper == "VERIFIED":
         if action.verified_salary:
@@ -135,6 +164,9 @@ def verify_employment_record(
             emp_record.current_salary = action.verified_salary
         if action.verified_job_title:
             emp_record.job_title = action.verified_job_title
+            emp_record.job_role = action.verified_job_title
+        if action.verified_joining_date:
+            emp_record.joining_date = action.verified_joining_date
 
     # Log verification record
     verification_entry = EmployerVerification(
@@ -150,6 +182,23 @@ def verify_employment_record(
         action_timestamp=datetime.utcnow()
     )
     db.add(verification_entry)
+    from app.models.models import Outcome, Followup
+    outcome = db.query(Outcome).filter(Outcome.employment_record_id == emp_record.id).first()
+    if outcome is None:
+        outcome = Outcome(trainee_id=emp_record.trainee_id, employment_record_id=emp_record.id, placement_status=1)
+        db.add(outcome)
+    outcome.is_verified = status_upper == "VERIFIED"
+    outcome.verification_source = "EMPLOYER_PORTAL"
+    outcome.verified_at = emp_record.verified_at
+    outcome.starting_salary = emp_record.starting_salary
+    outcome.current_salary = emp_record.current_salary
+    # Confirm only responses linked to this current report, never historical/unrelated check-ins.
+    for followup in db.query(Followup).filter(Followup.trainee_id == emp_record.trainee_id, Followup.status == "RESPONDED"):
+        response = dict(followup.response_data or {})
+        if response.get("employment_record_id") == emp_record.id and response.get("verification_status") == "UNVERIFIED":
+            response["verification_status"] = "VERIFIED" if status_upper == "VERIFIED" else "UNVERIFIED"
+            response["review_status"] = status_upper
+            followup.response_data = response
 
     # If verified, record in WageHistory
     if status_upper == "VERIFIED" and action.verified_salary:
@@ -170,7 +219,7 @@ def verify_employment_record(
 
     log_audit_event(
         db=db,
-        action="EMPLOYMENT_VERIFIED" if status_upper == "VERIFIED" else "EMPLOYMENT_REJECTED",
+        action=f"EMPLOYMENT_{status_upper}",
         entity_type="EMPLOYMENT_RECORD",
         entity_id=str(emp_record.id),
         user_id=current_user.id,
@@ -200,6 +249,8 @@ def search_candidates(
     Candidate discovery that strictly respects trainee consent and privacy.
     Only exposes non-sensitive information for consenting trainees.
     """
+    if current_user.role not in ("EMPLOYER", "ADMIN"):
+        raise HTTPException(403, "Employer role required.")
     query = db.query(Trainee).filter(Trainee.consent_given == True)
 
     if location and location != "ALL":

@@ -17,7 +17,7 @@ class AIAnalysisOutput(BaseModel):
 
 class AIService:
     """
-    High-level AI Service for SkillPulse.
+    High-level AI Service for NEXTUP.
     Encapsulates prompt engineering, external API communication,
     Pydantic schema validation, and resilient error recovery.
     """
@@ -80,7 +80,7 @@ class AIService:
             result = validated.model_dump()
             result["available"] = True
             return result
-        except ValidationError as val_err:
+        except (ValidationError, ValueError, TypeError) as val_err:
             logger.error("AI response failed Pydantic validation: %s", val_err)
             return {
                 "available": False,

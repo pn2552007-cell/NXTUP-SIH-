@@ -15,10 +15,12 @@ load_dotenv(BACKEND_DIR / ".env", override=True)
 load_dotenv(".env", override=True)
 
 class Settings(BaseSettings):
-    PROJECT_NAME: str = "SkillPulse"
+    PROJECT_NAME: str = "NEXTUP"
+    PLATFORM_TITLE: str = "AI-Powered Skilling Outcome Platform"
+    DEMO_PASSWORD: str = "NextUp@Demo2026!"
     API_V1_STR: str = "/api"
-    JWT_SECRET: str = "skillpulse-production-secure-jwt-secret-key-2026"
-    SECRET_KEY: str = "skillpulse-production-secure-jwt-secret-key-2026"
+    JWT_SECRET: str = "nextup-secure-jwt-secret-key-production"
+    SECRET_KEY: str = "nextup-secure-jwt-secret-key-production"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7  # 7 days
     DATABASE_URL: str = f"sqlite:///{DEFAULT_DB_PATH}"

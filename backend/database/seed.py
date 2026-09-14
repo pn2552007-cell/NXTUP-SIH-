@@ -17,7 +17,7 @@ from app.database import SessionLocal, engine, Base
 from app.models.models import (
     User, Trainee, Provider, Employer, Course, TrainingRecord, Assessment,
     Certification, Skill, TraineeSkill, EmploymentRecord, EmployerVerification,
-    Followup, WageHistory, SkillGapAnalysis, Consent
+    Followup, WageHistory, SkillGapAnalysis, Consent, Intervention, Outcome, Job, JobRequirement
 )
 from app.auth.jwt_handler import get_password_hash
 from app.config import settings
@@ -30,7 +30,14 @@ def seed_database():
     db = SessionLocal()
 
     # Clear existing demo data to ensure a clean state
-    print("🧹 Cleaning existing data...")
+    print("Cleaning existing NEXTUP demo data...")
+    try:
+        db.query(Intervention).delete()
+        db.query(Outcome).delete()
+        db.query(JobRequirement).delete()
+        db.query(Job).delete()
+    except Exception:
+        db.rollback()
     db.query(EmployerVerification).delete()
     db.query(WageHistory).delete()
     db.query(Followup).delete()
@@ -51,10 +58,10 @@ def seed_database():
 
     hashed_pwd = get_password_hash(DEMO_PWD)
 
-    print("👤 Creating Core Demo Users...")
+    print("Creating Core Demo Users (NEXTUP Demo — SIH26135 | Team Lumora)...")
     # 1. Admin User
     admin_user = User(
-        email="admin@skillpulse.demo",
+        email="admin@nextup.demo",
         hashed_password=hashed_pwd,
         role="ADMIN",
         full_name="Dr. Rajeshwari Sengupta (Joint Secretary)",
@@ -65,7 +72,7 @@ def seed_database():
 
     # 2. Primary Provider User
     provider_user = User(
-        email="provider@skillpulse.demo",
+        email="provider@nextup.demo",
         hashed_password=hashed_pwd,
         role="PROVIDER",
         full_name="National Skill Training Academy",
@@ -76,7 +83,7 @@ def seed_database():
 
     # 3. Primary Employer User
     employer_user = User(
-        email="employer@skillpulse.demo",
+        email="employer@nextup.demo",
         hashed_password=hashed_pwd,
         role="EMPLOYER",
         full_name="Vikramaditya Rao (HR Talent Director)",
@@ -87,7 +94,7 @@ def seed_database():
 
     # 4. Primary Trainee User
     trainee_user = User(
-        email="trainee@skillpulse.demo",
+        email="trainee@nextup.demo",
         hashed_password=hashed_pwd,
         role="TRAINEE",
         full_name="Aarav Sharma",
@@ -106,7 +113,7 @@ def seed_database():
         organization_name="National Skill Training Academy",
         code="PRV-NSTA-001",
         contact_person="Dr. Sunita Deshmukh",
-        email="provider@skillpulse.demo",
+        email="provider@nextup.demo",
         phone="+91 98220 22000",
         state="Maharashtra",
         district="Pune",
@@ -115,7 +122,7 @@ def seed_database():
     db.add(provider_1)
 
     provider_user_2 = User(
-        email="techempower@skillpulse.demo",
+        email="techempower@nextup.demo",
         hashed_password=hashed_pwd,
         role="PROVIDER",
         full_name="TechEmpower Skilling Foundation",
@@ -139,7 +146,7 @@ def seed_database():
     db.add(provider_2)
 
     provider_user_3 = User(
-        email="apexdigital@skillpulse.demo",
+        email="apexdigital@nextup.demo",
         hashed_password=hashed_pwd,
         role="PROVIDER",
         full_name="Apex Digital Institute",
@@ -255,12 +262,13 @@ def seed_database():
     # -------------------------------------------------------------
     # Primary Trainee Profile (Aarav Sharma)
     # -------------------------------------------------------------
-    print("🎓 Creating Primary Demo Trainee (Aarav Sharma)...")
+    print("Creating Primary Demo Trainee (Aarav Sharma - NXT-2026-000001)...")
     primary_trainee = Trainee(
         user_id=trainee_user.id,
-        skillpulse_id="SP-2026-000124",
+        nextup_id="NXT-2026-000001",
+        skillpulse_id="NXT-2026-000001",
         full_name="Aarav Sharma",
-        email="trainee@skillpulse.demo",
+        email="trainee@nextup.demo",
         phone="+91 98765 43210",
         state="Maharashtra",
         district="Pune",
@@ -278,7 +286,7 @@ def seed_database():
         trainee_id=primary_trainee.id,
         consent_status=True,
         consent_version="v1.0",
-        consent_text="I consent to SkillPulse tracking my training and employment outcomes.",
+        consent_text="I voluntarily agree to NEXTUP tracking my training and employment outcomes for public good.",
         ip_address="192.168.1.10"
     )
     db.add(primary_consent)
@@ -397,7 +405,7 @@ def seed_database():
         responded_at=datetime.utcnow() - timedelta(days=219),
         response_data={"employed": True, "employer": "TCS", "salary": 24000, "satisfaction": 5},
         channel="WHATSAPP_MOCK",
-        mock_sent_message="Hello Aarav! 30 days since certification: confirmed employment at Tata Consultancy Services."
+        sent_message="Hello Aarav! 30 days since certification: confirmed employment at Tata Consultancy Services."
     ))
     db.add(Followup(
         trainee_id=primary_trainee.id,
@@ -408,7 +416,7 @@ def seed_database():
         responded_at=datetime.utcnow() - timedelta(days=159),
         response_data={"employed": True, "employer": "TCS", "salary": 28000, "satisfaction": 5},
         channel="WHATSAPP_MOCK",
-        mock_sent_message="Hi Aarav! 90-day check-in: confirmed salary progression to ₹28,000/mo."
+        sent_message="Hi Aarav! 90-day check-in: confirmed salary progression to ₹28,000/mo."
     ))
     db.add(Followup(
         trainee_id=primary_trainee.id,
@@ -419,7 +427,7 @@ def seed_database():
         responded_at=datetime.utcnow() - timedelta(days=69),
         response_data={"employed": True, "same_employer": True, "salary": 32000, "satisfaction": 5},
         channel="WHATSAPP_MOCK",
-        mock_sent_message="Greetings Aarav! 6-Month retention confirmed with 33.3% wage growth."
+        sent_message="Greetings Aarav! 6-Month retention confirmed with 33.3% wage growth."
     ))
     db.add(Followup(
         trainee_id=primary_trainee.id,
@@ -427,7 +435,7 @@ def seed_database():
         status="SCHEDULED",
         scheduled_date="2026-11-25",
         channel="WHATSAPP_MOCK",
-        mock_sent_message="Scheduled: 1-Year longitudinal career progression review."
+        sent_message="Scheduled: 1-Year longitudinal career progression review."
     ))
 
     # AI Skill Gap Analysis for Aarav
@@ -446,7 +454,7 @@ def seed_database():
         ],
         missing_skills_json=["Docker", "AWS", "CI/CD"],
         confidence_score=0.92,
-        recommendations_json=[
+        recommended_skills_json=[
             "Focus on mastering high-priority target competencies: Docker, AWS, CI/CD.",
             "Containerization & Microservices with Docker",
             "AWS Cloud Practitioner for Developers"
@@ -629,7 +637,6 @@ def seed_database():
             location_state=st,
             employment_type="FULL_TIME",
             status=emp_status,
-            searching_details={"actively_searching": True, "desired_roles": ["Junior Developer", "Tech Support"], "support_needed": ["Mock Interviews"]} if is_searching else None,
             verification_status=v_status,
             verified_at=datetime.utcnow() - timedelta(days=40) if v_status == "VERIFIED" else None,
             confidence_score=0.94 if v_status == "VERIFIED" else 0.72
@@ -688,7 +695,7 @@ def seed_database():
                 responded_at=datetime.utcnow() - timedelta(days=58) if cp_st == "RESPONDED" else None,
                 response_data={"employed": is_employed, "current_salary": curr_sal} if cp_st == "RESPONDED" else None,
                 channel="WHATSAPP_MOCK",
-                mock_sent_message=f"[Mock Follow-up] Checkpoint {cp_name} for {t.full_name}"
+                sent_message=f"[Mock Follow-up] Checkpoint {cp_name} for {t.full_name}"
             ))
 
         # AI Skill Gap Analysis
@@ -700,26 +707,100 @@ def seed_database():
             matched_skills_json=[{"skill": sk, "match_pct": int(score * 0.95), "proficiency": "INTERMEDIATE"} for sk in course_skills[:3]],
             missing_skills_json=["Advanced Cloud Architecture", "CI/CD Orchestration"],
             confidence_score=0.88,
-            recommendations_json=["Complete intermediate cloud projects", "Practice unit testing with mock frameworks"]
+            recommended_skills_json=["Complete intermediate cloud projects", "Practice unit testing with mock frameworks"]
         ))
 
     db.commit()
-    print("✅ Seed completed successfully!")
-    print(f"📊 Summary:")
+
+    # --- NEXTUP: Seed Target Jobs & Job Requirements ---
+    print("Seeding Target Jobs & Job Requirements...")
+    job_specs = [
+        ("Full Stack Developer", "JOB-FS-001", "Information Technology",
+         "Designs and develops responsive web applications end-to-end.",
+         480000, 1200000, "HIGH",
+         [("JavaScript", 0.9, True), ("React", 0.85, True), ("Python", 0.75, True),
+          ("SQL", 0.75, True), ("REST APIs", 0.8, True), ("Git", 0.7, False)]),
+        ("Data Analyst", "JOB-DA-001", "Data Science & AI",
+         "Analyses structured datasets to derive actionable business insights.",
+         420000, 960000, "HIGH",
+         [("Python", 0.85, True), ("SQL", 0.9, True), ("Excel", 0.8, True),
+          ("Power BI", 0.75, True), ("Statistics", 0.7, False)]),
+        ("Cloud & DevOps Engineer", "JOB-CD-001", "Cloud Infrastructure",
+         "Manages cloud infrastructure, CI/CD pipelines, and container orchestration.",
+         600000, 1500000, "CRITICAL",
+         [("Docker", 0.85, True), ("AWS", 0.85, True), ("Linux", 0.9, True),
+          ("Kubernetes", 0.8, False), ("Terraform", 0.7, False)]),
+        ("Industrial IoT Specialist", "JOB-IOT-001", "Industrial Electronics",
+         "Designs and deploys connected industrial automation systems.",
+         360000, 840000, "MODERATE",
+         [("C/C++", 0.8, True), ("Embedded Systems", 0.85, True),
+          ("MQTT", 0.75, True), ("PLC Programming", 0.7, False)]),
+        ("Healthcare Data Coordinator", "JOB-HC-001", "Healthcare Technology",
+         "Manages EHR data workflows and clinical data compliance.",
+         300000, 600000, "MODERATE",
+         [("Medical Terminology", 0.85, True), ("EHR Systems", 0.85, True),
+          ("Healthcare Compliance & HIPAA", 0.85, True), ("Excel", 0.75, False)]),
+    ]
+    for title, code, domain, desc, sal_min, sal_max, demand, skill_reqs in job_specs:
+        job = Job(
+            title=title, code=code, domain=domain, description=desc,
+            salary_range_min=sal_min, salary_range_max=sal_max,
+            demand_level=demand, is_active=True
+        )
+        db.add(job)
+        db.flush()
+        for sk_name, weight, mandatory in skill_reqs:
+            db.add(JobRequirement(
+                job_id=job.id, skill_name=sk_name,
+                importance_weight=weight, is_mandatory=mandatory,
+            ))
+    db.commit()
+
+    # --- NEXTUP: Seed Demo Intervention for Primary Trainee ---
+    print("Seeding demo Intervention for primary trainee...")
+    demo_intervention = Intervention(
+        trainee_id=primary_trainee.id,
+        risk_level="MEDIUM",
+        risk_score=52.0,
+        trigger_reason="Moderate placement risk with Docker and AWS skill gaps detected",
+        title="Skill Enhancement & Job Readiness Program",
+        description=(
+            "Trainee has moderate placement risk. Targeted skill enhancement "
+            "and increased job search activity will improve outcomes."
+        ),
+        target_skills=["Docker", "AWS", "TypeScript"],
+        recommended_actions=[
+            "Priority skill modules to complete: Docker, AWS, TypeScript",
+            "Complete 2 missing skill modules identified in skill gap analysis",
+            "Build or update online portfolio/GitHub profile",
+            "Submit at least 3 job applications per week",
+            "Seek mentorship from placed alumni",
+        ],
+        status="IN_PROGRESS",
+    )
+    db.add(demo_intervention)
+    db.commit()
+
+    print("NEXTUP Seed completed! (SIH26135 | Team Lumora)")
+    print(f"Summary:")
     print(f"   - Users: {db.query(User).count()}")
     print(f"   - Trainees: {db.query(Trainee).count()}")
     print(f"   - Providers: {db.query(Provider).count()}")
     print(f"   - Employers: {db.query(Employer).count()}")
     print(f"   - Courses: {db.query(Course).count()}")
+    print(f"   - Jobs: {db.query(Job).count()}")
     print(f"   - Certifications: {db.query(Certification).count()}")
     print(f"   - Employment Records: {db.query(EmploymentRecord).count()}")
     print(f"   - Follow-ups: {db.query(Followup).count()}")
-    print(f"   - Wage Histories: {db.query(WageHistory).count()}")
-    print(f"   - Demo Credentials:")
-    print(f"     • Trainee:  trainee@skillpulse.demo  / {DEMO_PWD}")
-    print(f"     • Provider: provider@skillpulse.demo / {DEMO_PWD}")
-    print(f"     • Employer: employer@skillpulse.demo / {DEMO_PWD}")
-    print(f"     • Admin:    admin@skillpulse.demo    / {DEMO_PWD}")
+    print(f"   - Interventions: {db.query(Intervention).count()}")
+    print(f"")
+    print(f"   DEMO CREDENTIALS (password for all: {DEMO_PWD})")
+    print(f"     Trainee:  trainee@nextup.demo")
+    print(f"     Provider: provider@nextup.demo")
+    print(f"     Employer: employer@nextup.demo")
+    print(f"     Admin:    admin@nextup.demo")
+    print(f"")
+    print(f"   NOTE: All data is DEMO/SYNTHETIC for SIH26135 demonstration only.")
     db.close()
 
 if __name__ == "__main__":

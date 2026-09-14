@@ -5,14 +5,20 @@ from contextlib import asynccontextmanager
 from app.config import settings
 from app.api.router import api_router
 
+from app.database import engine, Base
+import app.models.models  # ensure models are loaded for table creation
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Application startup without automatic schema mutation (handled by Alembic)
+    # Ensure all tables exist on startup
+    Base.metadata.create_all(bind=engine)
+    from app.services.schema_upgrade import upgrade_outcome_schema
+    upgrade_outcome_schema(engine)
     yield
 
 app = FastAPI(
-    title=settings.PROJECT_NAME,
-    description="AI-Powered Longitudinal Skilling Outcome Tracking Platform",
+    title=f"{settings.PROJECT_NAME} — {settings.PLATFORM_TITLE}",
+    description="AI-Powered Skilling Outcome Platform — Longitudinal tracking from training to verified employment, retention, and wage progression.",
     version="1.0.0",
     lifespan=lifespan
 )
@@ -33,7 +39,7 @@ app.include_router(api_router, prefix=settings.API_V1_STR)
 def root():
     return {
         "platform": settings.PROJECT_NAME,
-        "description": "AI-Powered Longitudinal Skilling Outcome Tracking Platform",
+        "title": settings.PLATFORM_TITLE,
         "status": "online",
         "api_docs": "/docs",
         "version": "1.0.0"

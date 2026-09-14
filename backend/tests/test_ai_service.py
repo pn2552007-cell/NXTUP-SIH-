@@ -31,6 +31,7 @@ def test_ai_endpoint_safe_response_via_api(client):
     })
     token = reg_res.json()["access_token"]
     headers = {"Authorization": f"Bearer {token}"}
+    assert client.post("/api/consent", headers=headers, json={"consent_status": True}).status_code == 200
 
     res = client.post("/api/ai/skill-gap", headers=headers, json={
         "trainee_skills": ["JavaScript", "React"],

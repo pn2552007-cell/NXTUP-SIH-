@@ -1,0 +1,116 @@
+{
+  "model_name": "LogisticRegression",
+  "dataset": "SYNTHETIC \u2014 Not real government data",
+  "disclaimer": "Demo prediction only. Model requires validation on real verified outcome data before operational deployment.",
+  "sih_problem_id": "SIH26135",
+  "team": "Team Lumora",
+  "n_samples": 500,
+  "n_train": 400,
+  "n_test": 100,
+  "features": [
+    "attendance_pct",
+    "assessment_avg_score",
+    "certification_status",
+    "skill_gap_score",
+    "has_apprenticeship",
+    "training_duration_weeks",
+    "prior_experience_years",
+    "num_job_applications",
+    "verified_skill_count",
+    "course_domain",
+    "state"
+  ],
+  "target": "placement_status",
+  "metrics": {
+    "precision": 0.9773,
+    "recall": 0.9149,
+    "f1_score": 0.9451,
+    "roc_auc": 0.9699,
+    "confusion_matrix": [
+      [
+        4,
+        2
+      ],
+      [
+        8,
+        86
+      ]
+    ],
+    "classification_report": {
+      "0": {
+        "precision": 0.3333333333333333,
+        "recall": 0.6666666666666666,
+        "f1-score": 0.4444444444444444,
+        "support": 6.0
+      },
+      "1": {
+        "precision": 0.9772727272727273,
+        "recall": 0.9148936170212766,
+        "f1-score": 0.945054945054945,
+        "support": 94.0
+      },
+      "accuracy": 0.9,
+      "macro avg": {
+        "precision": 0.6553030303030303,
+        "recall": 0.7907801418439716,
+        "f1-score": 0.6947496947496947,
+        "support": 100.0
+      },
+      "weighted avg": {
+        "precision": 0.9386363636363636,
+        "recall": 0.9,
+        "f1-score": 0.915018315018315,
+        "support": 100.0
+      }
+    }
+  },
+  "top_feature_importances": [
+    [
+      "assessment_avg_score",
+      1.9307826115698754
+    ],
+    [
+      "certification_status",
+      1.6496706259924716
+    ],
+    [
+      "prior_experience_years",
+      1.5596534752047757
+    ],
+    [
+      "skill_gap_score",
+      1.438135957435923
+    ],
+    [
+      "state_Uttar Pradesh",
+      1.3456622445751019
+    ],
+    [
+      "verified_skill_count",
+      1.1955302049278758
+    ],
+    [
+      "attendance_pct",
+      1.1414689251532233
+    ],
+    [
+      "has_apprenticeship",
+      1.0307096569020613
+    ],
+    [
+      "num_job_applications",
+      0.9704799421108039
+    ],
+    [
+      "state_Rajasthan",
+      0.960205893944646
+    ]
+  ],
+  "trained_on": "2026-09-12",
+  "baseline_model": "LogisticRegression",
+  "baseline_metrics": {
+    "recall": 0.9149,
+    "f1_score": 0.9451,
+    "roc_auc": 0.9699
+  }
+}

@@ -9,6 +9,7 @@ from app.schemas.schemas import EmploymentReportRequest, EmploymentRecordRespons
 from app.auth.jwt_handler import get_current_user
 from app.services.notification_service import notification_service
 from app.utils.audit import log_audit_event
+from app.services.outcome_access import require_trainee_access, employer_matches
 
 router = APIRouter(prefix="/employment", tags=["Employment Tracking"])
 
@@ -45,7 +46,10 @@ def report_employment(
             detail="Trainee profile not found."
         )
 
+    require_trainee_access(db, current_user, trainee, providers=False)
     employer_id = report.employer_id
+    if employer_id and not db.query(Employer).filter(Employer.id == employer_id).first():
+        raise HTTPException(400, "Selected employer does not exist.")
     if not employer_id and report.employer_name:
         emp = db.query(Employer).filter(Employer.company_name.ilike(report.employer_name.strip())).first()
         if emp:
@@ -54,7 +58,7 @@ def report_employment(
     status_upper = report.status.upper()
     valid_statuses = ("SEEKING", "EMPLOYED", "SELF_EMPLOYED", "NOT_SEEKING", "UNKNOWN")
     if status_upper not in valid_statuses:
-        status_upper = "EMPLOYED"
+        raise HTTPException(400, "Invalid employment status.")
 
     # Calculate time to employment
     time_to_emp = calculate_time_to_employment(db, trainee.id, report.joining_date)
@@ -63,6 +67,7 @@ def report_employment(
     if not emp_record:
         emp_record = EmploymentRecord(trainee_id=trainee.id)
         db.add(emp_record)
+        db.flush()
 
     emp_record.status = status_upper
     emp_record.employer_id = employer_id
@@ -76,7 +81,13 @@ def report_employment(
     emp_record.joining_date = report.joining_date
     emp_record.starting_salary = report.starting_salary
     emp_record.current_salary = report.current_salary or report.starting_salary
+    emp_record.non_placement_reason = report.non_placement_reason
     emp_record.verification_status = "PENDING"
+    emp_record.verified_at = None
+    from app.models.models import Outcome
+    for outcome in db.query(Outcome).filter(Outcome.employment_record_id == emp_record.id):
+        outcome.is_verified = False
+        outcome.verified_at = None
     emp_record.confidence_score = 0.50  # Self-reported baseline
 
     # Add initial wage history if salary provided
@@ -114,10 +125,11 @@ def report_employment(
     )
 
     # Optional employer notification interface call
-    if report.employer_name:
+    if employer_id:
+        linked_employer = db.get(Employer, employer_id)
         notification_service.send_verification_request_to_employer(
             employer_name=report.employer_name,
-            employer_email=f"verify@{report.employer_name.lower().replace(' ', '')}.com",
+            employer_email=linked_employer.email,
             trainee_name=trainee.full_name,
             job_title=report.job_title or "Trainee Graduate"
         )
@@ -144,10 +156,16 @@ def report_employment(
     )
 
 @router.get("/{record_id}", response_model=EmploymentRecordResponse)
-def get_employment_record(record_id: int, db: Session = Depends(get_db)):
+def get_employment_record(record_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     record = db.query(EmploymentRecord).filter(EmploymentRecord.id == record_id).first()
     if not record:
         raise HTTPException(status_code=404, detail="Employment record not found.")
+    if current_user.role == "EMPLOYER":
+        employer = db.query(Employer).filter(Employer.user_id == current_user.id).first()
+        if not employer_matches(employer, record) or not record.trainee.consent_given:
+            raise HTTPException(403, "Employment record is outside your account scope.")
+    else:
+        require_trainee_access(db, current_user, record.trainee)
 
     time_to_emp = calculate_time_to_employment(db, record.trainee_id, record.joining_date)
 

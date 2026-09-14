@@ -49,7 +49,8 @@ class Trainee(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
-    skillpulse_id = Column(String(50), unique=True, index=True, nullable=False)  # Non-sequential e.g. SP-A7K92X4L
+    nextup_id = Column(String(50), unique=True, index=True, nullable=True)  # Unified ID e.g. NXT-2026-000001
+    skillpulse_id = Column(String(50), unique=True, index=True, nullable=False)  # Legacy compatibility
     full_name = Column(String(255), nullable=False)
     email = Column(String(255), nullable=False, index=True)
     phone = Column(String(50), nullable=True)
@@ -73,6 +74,12 @@ class Trainee(Base):
     followups = relationship("Followup", back_populates="trainee")
     wage_history = relationship("WageHistory", back_populates="trainee")
     skill_gap_analyses = relationship("SkillGapAnalysis", back_populates="trainee")
+    interventions = relationship("Intervention", back_populates="trainee")
+    outcomes = relationship("Outcome", back_populates="trainee")
+
+    @property
+    def unified_id(self) -> str:
+        return self.nextup_id or self.skillpulse_id
 
 
 class Provider(Base):
@@ -280,6 +287,7 @@ class EmploymentRecord(Base):
     starting_salary = Column(Float, nullable=True)
     current_salary = Column(Float, nullable=True)
     status = Column(String(50), default="SEEKING")  # SEEKING, EMPLOYED, SELF_EMPLOYED, NOT_SEEKING, UNKNOWN
+    non_placement_reason = Column(String(255), nullable=True)
     verification_status = Column(String(50), default="PENDING")  # PENDING, VERIFIED, REJECTED
     verified_at = Column(DateTime, nullable=True)
     confidence_score = Column(Float, default=0.0)  # Calculated dynamically from verification logic
@@ -385,3 +393,92 @@ class AuditLog(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
     user = relationship("User", back_populates="audit_logs")
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# NEXTUP New Entities: Job, JobRequirement, Intervention, Outcome
+# ─────────────────────────────────────────────────────────────────────────────
+
+class Job(Base):
+    """Target industry job roles with salary ranges and demand levels."""
+    __tablename__ = "jobs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String(255), nullable=False, index=True)
+    code = Column(String(50), unique=True, index=True, nullable=True)
+    domain = Column(String(100), nullable=False)  # IT, Healthcare, Manufacturing, etc.
+    description = Column(Text, nullable=True)
+    salary_range_min = Column(Float, nullable=True)
+    salary_range_max = Column(Float, nullable=True)
+    demand_level = Column(String(20), default="MODERATE")  # LOW, MODERATE, HIGH, CRITICAL
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    requirements = relationship("JobRequirement", back_populates="job")
+
+
+class JobRequirement(Base):
+    """Skill requirements for target jobs — maps Job to Skill with importance weighting."""
+    __tablename__ = "job_requirements"
+
+    id = Column(Integer, primary_key=True, index=True)
+    job_id = Column(Integer, ForeignKey("jobs.id"), nullable=False)
+    skill_id = Column(Integer, ForeignKey("skills.id"), nullable=True)
+    skill_name = Column(String(100), nullable=False)
+    importance_weight = Column(Float, default=1.0)  # 0.0–1.0
+    is_mandatory = Column(Boolean, default=True)
+    min_proficiency = Column(String(50), default="INTERMEDIATE")  # BEGINNER, INTERMEDIATE, ADVANCED, EXPERT
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    job = relationship("Job", back_populates="requirements")
+    skill = relationship("Skill")
+
+
+class Intervention(Base):
+    """Personalized intervention records generated from Risk + Skill Gap + Job Demand analysis."""
+    __tablename__ = "interventions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    trainee_id = Column(Integer, ForeignKey("trainees.id"), nullable=False)
+    assigned_provider_id = Column(Integer, ForeignKey("providers.id"), nullable=True)
+    risk_level = Column(String(20), nullable=False)  # LOW, MEDIUM, HIGH
+    risk_score = Column(Float, nullable=True)
+    trigger_reason = Column(String(255), nullable=True)
+    title = Column(String(255), nullable=False)
+    description = Column(Text, nullable=True)
+    target_skills = Column(JSON, nullable=True)  # list of skills to work on
+    recommended_actions = Column(JSON, nullable=True)  # list of recommended actions
+    status = Column(String(50), default="RECOMMENDED")  # RECOMMENDED, IN_PROGRESS, COMPLETED, DISMISSED
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    trainee = relationship("Trainee", back_populates="interventions")
+    assigned_provider = relationship("Provider")
+
+
+class Outcome(Base):
+    """Verified longitudinal outcome records — closing the feedback loop for model retraining."""
+    __tablename__ = "outcomes"
+
+    id = Column(Integer, primary_key=True, index=True)
+    trainee_id = Column(Integer, ForeignKey("trainees.id"), nullable=False)
+    employment_record_id = Column(Integer, ForeignKey("employment_records.id"), nullable=True)
+    placement_status = Column(Integer, nullable=False)  # 0 = not placed, 1 = placed
+    retention_status_6m = Column(Integer, nullable=True)  # 0/1
+    retention_status_12m = Column(Integer, nullable=True)  # 0/1
+    starting_salary = Column(Float, nullable=True)
+    current_salary = Column(Float, nullable=True)
+    wage_growth_pct = Column(Float, nullable=True)
+    is_verified = Column(Boolean, default=False)
+    verification_source = Column(String(100), nullable=True)  # EMPLOYER_PORTAL, FOLLOWUP, ADMIN
+    model_feedback_used = Column(Boolean, default=False)  # True once this outcome feeds model retraining
+    notes = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    verified_at = Column(DateTime, nullable=True)
+
+    trainee = relationship("Trainee", back_populates="outcomes")
+    employment_record = relationship("EmploymentRecord")
+
+
+# Alias for cleaner imports
+TrainingProgram = Course

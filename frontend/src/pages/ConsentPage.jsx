@@ -7,14 +7,14 @@ import { ShieldCheck, Lock, CheckCircle2, XCircle, FileText, AlertTriangle, Arro
 import { Badge } from '../components/common/Badge';
 
 export const ConsentPage = () => {
-  const { user, updateConsentStatus, skillpulseId } = useAuth();
+  const { user, updateConsentStatus, nextupId, skillpulseId } = useAuth();
   const { showSuccess, showError } = useToast();
   const navigate = useNavigate();
 
   const [hasConsent, setHasConsent] = useState(false);
   const [agreed, setAgreed] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [activeId, setActiveId] = useState(skillpulseId || null);
+  const [activeId, setActiveId] = useState(nextupId || skillpulseId || null);
 
   useEffect(() => {
     const fetchStatus = async () => {
@@ -23,7 +23,8 @@ export const ConsentPage = () => {
         if (res.data.consent_given) {
           setHasConsent(true);
           setAgreed(true);
-          if (res.data.skillpulse_id) setActiveId(res.data.skillpulse_id);
+          const assignedId = res.data.nextup_id || res.data.skillpulse_id;
+          if (assignedId) setActiveId(assignedId);
         }
       } catch (err) {
         console.error('Failed to fetch consent status:', err);
@@ -44,12 +45,13 @@ export const ConsentPage = () => {
         consent_status: true,
         consent_version: 'v1.0',
         purpose: 'Longitudinal tracking of training, employment, retention, and wage progression',
-        consent_text: 'I voluntarily consent to SkillPulse tracking my longitudinal training and employment outcomes.',
+        consent_text: 'I voluntarily consent to NEXTUP tracking my longitudinal training and employment outcomes under DPDP Act framework.',
       });
 
       showSuccess(res.data.message);
-      updateConsentStatus(true, res.data.skillpulse_id);
-      setActiveId(res.data.skillpulse_id);
+      const assignedId = res.data.nextup_id || res.data.skillpulse_id;
+      updateConsentStatus(true, assignedId);
+      setActiveId(assignedId);
       setHasConsent(true);
     } catch (err) {
       showError('Failed to record consent');
@@ -85,7 +87,7 @@ export const ConsentPage = () => {
           Your Data, Your Consent.
         </h1>
         <p className="text-xs sm:text-sm text-slate-300 max-w-xl mx-auto">
-          SkillPulse strictly respects trainee privacy. Explicit consent is mandatory to create your unified SkillPulse ID and initiate longitudinal outcome tracking.
+          NEXTUP strictly adheres to India's Digital Personal Data Protection (DPDP) Act. Explicit consent is mandatory to create your unified NEXTUP ID and initiate longitudinal outcome tracking.
         </p>
       </div>
 
@@ -94,13 +96,13 @@ export const ConsentPage = () => {
         <div className="glass-panel-glow rounded-2xl p-6 border-emerald-500/40 text-center space-y-3">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold">
             <Sparkles className="w-3.5 h-3.5" />
-            SkillPulse ID Activated
+            NEXTUP ID Activated
           </div>
           <div className="text-3xl font-black font-mono tracking-wider text-white">
             {activeId}
           </div>
           <p className="text-xs text-slate-300 max-w-md mx-auto">
-            This unique identifier connects your institutional training, assessment certifications, employer verification records, and wage progression securely.
+            This persistent identifier connects your institutional training, assessment certifications, ML risk profile, employer verification records, and wage progression securely.
           </p>
           <div className="pt-2">
             <button
@@ -119,7 +121,7 @@ export const ConsentPage = () => {
         <div className="flex items-center justify-between border-b border-slate-800 pb-4">
           <div className="flex items-center gap-2 text-sm font-bold text-white">
             <FileText className="w-4 h-4 text-emerald-400" />
-            <span>Digital Consent Agreement (Version v1.0)</span>
+            <span>Digital Consent Agreement (DPDP Compliant • v1.0)</span>
           </div>
           <Badge variant={hasConsent ? 'emerald' : 'amber'}>
             {hasConsent ? 'Consent Active ✓' : 'Awaiting Consent'}
@@ -128,10 +130,13 @@ export const ConsentPage = () => {
 
         {/* Informational Clauses */}
         <div className="space-y-3 text-xs text-slate-300 bg-slate-950/60 p-4 rounded-xl border border-slate-800/80 leading-relaxed">
-          <div className="font-semibold text-white">How SkillPulse Uses Your Skilling Information:</div>
+          <div className="font-semibold text-white">How NEXTUP Uses Your Skilling Information:</div>
           <ul className="space-y-2 list-disc list-inside text-slate-400">
             <li>
               <strong>Training & Assessment Records:</strong> Connect your attendance, course completions, and assessment scores from accredited training providers.
+            </li>
+            <li>
+              <strong>AI Placement Risk & Interventions:</strong> Calculate early dropout/placement risk to recommend tailored bridge courses and mentorship before training concludes.
             </li>
             <li>
               <strong>Post-Training Employment Verification:</strong> Facilitate employer verification of job titles, joining dates, and starting compensation to ensure data integrity.
@@ -155,7 +160,7 @@ export const ConsentPage = () => {
               className="mt-1 w-4 h-4 text-emerald-600 bg-slate-950 border-slate-600 rounded focus:ring-emerald-500"
             />
             <span className="text-xs text-slate-200 font-medium">
-              I voluntarily consent to SkillPulse tracking my training, employment, retention, and wage growth outcomes. I understand that I can review, update, or revoke my consent at any time.
+              I voluntarily consent to NEXTUP tracking my training, employment, retention, and wage growth outcomes. I understand that I can review, update, or revoke my consent at any time.
             </span>
           </label>
         </div>
@@ -180,7 +185,7 @@ export const ConsentPage = () => {
               className="px-6 py-2.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white transition-all shadow-lg shadow-emerald-950 disabled:opacity-50 flex items-center gap-2"
             >
               <CheckCircle2 className="w-4 h-4" />
-              <span>{submitting ? 'Recording Consent...' : 'Grant Consent & Activate SkillPulse ID'}</span>
+              <span>{submitting ? 'Recording Consent...' : 'Grant Consent & Activate NEXTUP ID'}</span>
             </button>
           )}
         </div>

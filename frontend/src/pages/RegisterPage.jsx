@@ -22,26 +22,43 @@ export const RegisterPage = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    if (!fullName.trim()) {
+      showError('Please enter your full name');
+      return;
+    }
+    if (!email.trim()) {
+      showError('Please enter your email address');
+      return;
+    }
+    if (password.length < 6) {
+      showError('Password must be at least 6 characters');
+      return;
+    }
+    if ((role === 'PROVIDER' || role === 'EMPLOYER') && !orgName.trim()) {
+      showError('Organization / Company name is required');
+      return;
+    }
+
     setSubmitting(true);
     try {
       await authAPI.register({
-        email,
+        email: email.trim(),
         password,
-        full_name: fullName,
+        full_name: fullName.trim(),
         role,
-        phone,
-        organization_name: orgName || undefined,
+        phone: phone.trim() || undefined,
+        organization_name: orgName.trim() || undefined,
         state,
         district,
       });
 
       // Automatically sign in
-      const loginData = await login(email, password);
+      await login(email.trim(), password);
       showSuccess(`Account registered successfully as ${role}`);
 
       if (role === 'TRAINEE') {
         navigate('/consent');
-      } else if (role === 'PROVIDER') {
+      } else if (role === 'PROVIDER' || role === 'TRAINING_PROVIDER') {
         navigate('/provider/dashboard');
       } else if (role === 'EMPLOYER') {
         navigate('/employer/dashboard');
@@ -49,8 +66,15 @@ export const RegisterPage = () => {
         navigate('/admin/dashboard');
       }
     } catch (err) {
-      showError(err.response?.data?.detail || 'Registration failed');
-      console.error(err);
+      const detail = err.response?.data?.detail;
+      let msg = 'Registration failed. Please try again.';
+      if (typeof detail === 'string') {
+        msg = detail;
+      } else if (Array.isArray(detail)) {
+        msg = detail.map((d) => d.msg || JSON.stringify(d)).join(', ');
+      }
+      showError(msg);
+      console.error('Registration error:', err);
     } finally {
       setSubmitting(false);
     }
@@ -63,7 +87,7 @@ export const RegisterPage = () => {
           <div className="inline-flex p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 mb-2">
             <Activity className="w-8 h-8" />
           </div>
-          <h2 className="text-2xl font-bold text-white tracking-tight">Create SkillPulse Account</h2>
+          <h2 className="text-2xl font-bold text-white tracking-tight">Create NEXTUP Account</h2>
           <p className="text-xs text-slate-400">
             Join the national longitudinal outcome tracking platform.
           </p>

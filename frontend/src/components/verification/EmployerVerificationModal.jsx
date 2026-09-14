@@ -4,35 +4,40 @@ import { useToast } from '../../contexts/ToastContext';
 import { Modal } from '../common/Modal';
 import { CheckCircle2, XCircle, AlertCircle, Building2, Calendar, DollarSign, Briefcase } from 'lucide-react';
 
-export const EmployerVerificationModal = ({ isOpen, onClose, requestItem, onSuccess }) => {
+export const EmployerVerificationModal = ({ isOpen, onClose, item, requestItem, onSuccess }) => {
+  const resolvedItem = item || requestItem;
   const { showSuccess, showError } = useToast();
   const [action, setAction] = useState('VERIFIED'); // VERIFIED, REJECTED, CORRECTION_REQUESTED
-  const [verifiedSalary, setVerifiedSalary] = useState(requestItem?.reported_salary || 25000);
-  const [verifiedJobTitle, setVerifiedJobTitle] = useState(requestItem?.reported_job || '');
-  const [verifiedJoiningDate, setVerifiedJoiningDate] = useState(requestItem?.reported_joining_date || '');
+  const [verifiedSalary, setVerifiedSalary] = useState(resolvedItem?.reported_salary ?? '');
+  const [verifiedJobTitle, setVerifiedJobTitle] = useState(resolvedItem?.reported_job || '');
+  const [verifiedJoiningDate, setVerifiedJoiningDate] = useState(resolvedItem?.reported_joining_date || '');
   const [notes, setNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  if (!requestItem) return null;
+  if (!resolvedItem) return null;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (action === 'CORRECTION_REQUESTED' && !notes.trim()) {
+      showError('Please add a note explaining what the trainee should correct.');
+      return;
+    }
     setSubmitting(true);
     try {
       await employerAPI.verify({
-        employment_record_id: requestItem.employment_record_id,
+        employment_record_id: resolvedItem.employment_record_id,
         status: action,
         notes,
-        verified_salary: action === 'VERIFIED' ? Number(verifiedSalary) : null,
+        verified_salary: action === 'VERIFIED' && verifiedSalary !== '' ? Number(verifiedSalary) : null,
         verified_job_title: action === 'VERIFIED' ? verifiedJobTitle : null,
         verified_joining_date: action === 'VERIFIED' ? verifiedJoiningDate : null,
       });
 
-      showSuccess(`Employment record ${action.toLowerCase()} successfully!`);
+      showSuccess(`Employment record ${action.toLowerCase().replace('_', ' ')} successfully!`);
       if (onSuccess) onSuccess();
       onClose();
     } catch (err) {
-      showError('Failed to record employer verification');
+      showError(err.response?.data?.detail || 'Failed to record employer verification');
       console.error(err);
     } finally {
       setSubmitting(false);
@@ -46,32 +51,35 @@ export const EmployerVerificationModal = ({ isOpen, onClose, requestItem, onSucc
         <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 space-y-3">
           <div className="flex items-center justify-between border-b border-slate-800 pb-2">
             <div>
-              <div className="text-sm font-bold text-white">{requestItem.trainee_name}</div>
-              <div className="text-xs font-mono text-emerald-400">ID: {requestItem.skillpulse_id}</div>
+              <div className="text-sm font-bold text-white">{resolvedItem.trainee_name}</div>
+              <div className="text-xs font-mono text-emerald-400">ID: {resolvedItem.nextup_id || resolvedItem.skillpulse_id}</div>
             </div>
             <span className="text-xs px-2 py-1 rounded bg-slate-800 text-slate-300 font-medium">
-              {requestItem.course_name}
+              {resolvedItem.course_name}
             </span>
           </div>
 
           <div className="grid grid-cols-2 gap-3 text-xs">
             <div className="flex items-center gap-2 text-slate-300">
               <Briefcase className="w-3.5 h-3.5 text-slate-400" />
-              <span>Reported Role: <strong>{requestItem.reported_job}</strong></span>
+              <span>Reported Role: <strong>{resolvedItem.reported_job}</strong></span>
             </div>
             <div className="flex items-center gap-2 text-slate-300">
               <Calendar className="w-3.5 h-3.5 text-slate-400" />
-              <span>Joining Date: <strong>{requestItem.reported_joining_date}</strong></span>
+              <span>Joining Date: <strong>{resolvedItem.reported_joining_date}</strong></span>
             </div>
             <div className="flex items-center gap-2 text-slate-300">
               <DollarSign className="w-3.5 h-3.5 text-slate-400" />
-              <span>Reported Salary: <strong>₹{requestItem.reported_salary?.toLocaleString()}/mo</strong></span>
+              <span>Reported Salary: <strong>₹{resolvedItem.reported_salary?.toLocaleString()}/mo</strong></span>
             </div>
             <div className="flex items-center gap-2 text-slate-300">
               <Building2 className="w-3.5 h-3.5 text-slate-400" />
-              <span>Location: <strong>{requestItem.reported_location}</strong></span>
+              <span>Location: <strong>{resolvedItem.reported_location || '—'}</strong></span>
             </div>
           </div>
+          <p className="text-[11px] text-slate-500 pt-1">
+            These details are trainee self-reported. Verification confirms the outcome only and does not replace employer HR or payroll records.
+          </p>
         </div>
 
         {/* Verification Action Selection */}

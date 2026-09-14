@@ -1,0 +1,513 @@
+# =============================================================================
+# NEXTUP Platform - Synthetic Placement Outcomes Dataset
+# =============================================================================
+# PURPOSE: Technical demonstration only for SIH 2026 (Problem ID: SIH26135)
+# DISCLAIMER: This is SYNTHETIC/SIMULATED data generated algorithmically.
+#             It does NOT represent real government data, real trainees, or
+#             real employment outcomes. Model accuracy numbers computed on
+#             this dataset do NOT represent real-world predictive performance.
+#             Validation on real verified outcome data is REQUIRED before
+#             any operational deployment.
+# TEAM: Team Lumora | Generated: 2026-09-12
+# =============================================================================
+attendance_pct,assessment_avg_score,certification_status,skill_gap_score,has_apprenticeship,training_duration_weeks,prior_experience_years,course_domain,state,num_job_applications,verified_skill_count,placement_status
+89.9,74.3,0,61.6,1,16,0,Information Technology,Maharashtra,18,8,1
+80.0,53.5,1,59.1,0,15,4,Healthcare Technology,Tamil Nadu,8,2,1
+73.3,80.8,1,33.6,0,9,2,Industrial Electronics,Telangana,11,11,1
+55.3,100,0,30.5,1,13,4,Healthcare Technology,Maharashtra,6,3,1
+84.3,30,1,70.7,0,15,5,Cloud Infrastructure,Gujarat,11,4,1
+95.6,63.5,1,21.4,0,18,5,Information Technology,Gujarat,17,5,1
+78.5,76.6,1,28.7,0,17,5,Information Technology,West Bengal,10,5,1
+98.3,78.2,1,47.7,1,14,4,Industrial Electronics,Uttar Pradesh,12,7,1
+71.5,71.5,0,17.7,1,20,5,Cloud Infrastructure,Karnataka,13,11,1
+91.4,30,1,10.8,1,18,4,Industrial Electronics,Gujarat,24,6,1
+75.6,82.2,0,60.5,1,16,1,Information Technology,Telangana,16,3,1
+63.0,89.5,1,64.5,0,8,4,Cloud Infrastructure,Maharashtra,10,9,1
+100,56.1,1,31.5,0,17,0,Information Technology,Karnataka,2,9,1
+75.4,86.1,1,28.6,1,14,1,Cloud Infrastructure,Telangana,17,5,1
+99.7,71.2,1,46.2,0,11,0,Industrial Electronics,Uttar Pradesh,10,2,1
+77.0,77.2,1,15.0,0,18,3,Information Technology,Tamil Nadu,6,10,1
+68.1,65.8,1,38.5,0,18,3,Healthcare Technology,Rajasthan,11,8,1
+83.0,99.0,1,17.6,0,16,3,Information Technology,Tamil Nadu,4,8,1
+48.3,80.5,0,66.6,1,9,0,Data Science and AI,Maharashtra,20,10,1
+71.4,82.4,0,38.1,0,14,0,Cloud Infrastructure,West Bengal,12,6,1
+44.6,93.0,1,48.9,1,10,1,Data Science and AI,Maharashtra,9,5,1
+69.1,94.3,1,69.7,0,16,0,Data Science and AI,Karnataka,5,3,1
+48.6,96.4,1,50.5,0,9,3,Cloud Infrastructure,Gujarat,21,11,1
+74.0,73.3,1,31.0,0,20,0,Data Science and AI,Karnataka,0,9,1
+60.7,67.0,0,34.4,0,11,2,Information Technology,West Bengal,9,4,1
+57.8,100,1,56.8,1,18,0,Healthcare Technology,Karnataka,4,6,1
+77.6,61.5,1,24.7,0,18,5,Information Technology,West Bengal,8,10,1
+100,87.8,1,10.2,1,18,2,Information Technology,Rajasthan,5,9,1
+83.9,72.4,1,73.3,0,13,4,Healthcare Technology,Rajasthan,17,4,1
+87.2,82.0,0,17.2,1,14,4,Information Technology,Uttar Pradesh,23,4,1
+100,67.1,1,11.7,1,13,3,Cloud Infrastructure,Uttar Pradesh,25,12,1
+100,68.3,1,24.0,1,13,2,Information Technology,Uttar Pradesh,25,5,1
+69.9,56.7,1,14.9,1,13,5,Information Technology,Gujarat,16,8,1
+75.2,92.0,1,17.6,0,19,2,Data Science and AI,Karnataka,13,11,1
+85.9,65.1,0,40.5,0,20,4,Industrial Electronics,Uttar Pradesh,21,12,1
+82.3,53.0,0,73.0,0,18,3,Data Science and AI,Telangana,10,8,0
+88.9,85.5,1,57.4,1,17,4,Healthcare Technology,Maharashtra,9,8,1
+87.7,59.6,1,57.3,0,20,5,Healthcare Technology,Karnataka,5,12,1
+56.9,69.5,1,67.3,1,18,2,Data Science and AI,Tamil Nadu,7,5,1
+79.7,48.4,1,72.0,1,19,5,Industrial Electronics,Rajasthan,12,9,1
+91.7,94.0,1,70.2,1,20,3,Cloud Infrastructure,West Bengal,7,4,1
+81.5,40.8,1,79.2,1,20,3,Information Technology,Rajasthan,19,10,1
+69.7,75.5,1,41.5,1,18,2,Healthcare Technology,West Bengal,24,10,1
+69.4,69.0,1,72.5,0,10,1,Information Technology,Uttar Pradesh,12,4,0
+66.4,80.2,1,14.4,1,14,4,Information Technology,Rajasthan,22,2,1
+83.2,72.8,1,39.3,1,16,4,Data Science and AI,Uttar Pradesh,7,9,1
+74.7,73.7,1,57.5,0,10,3,Data Science and AI,Maharashtra,4,11,1
+66.9,88.5,1,22.7,0,13,1,Information Technology,Gujarat,14,7,1
+71.5,100,1,68.4,0,19,4,Industrial Electronics,Uttar Pradesh,1,7,1
+56.8,73.2,0,11.4,0,10,3,Information Technology,Uttar Pradesh,21,3,0
+70.0,42.8,0,52.5,1,9,1,Industrial Electronics,Maharashtra,9,3,1
+69.5,49.3,0,58.3,1,9,5,Industrial Electronics,Karnataka,24,6,1
+80.8,55.7,1,35.9,0,13,0,Healthcare Technology,Karnataka,13,9,1
+83.8,66.9,1,77.6,0,20,4,Industrial Electronics,West Bengal,24,9,1
+87.2,50.6,1,27.2,1,12,3,Industrial Electronics,Rajasthan,7,9,1
+93.0,77.2,1,33.8,1,19,2,Data Science and AI,Uttar Pradesh,17,2,1
+78.8,90.4,1,26.8,0,19,3,Information Technology,Karnataka,14,2,1
+92.7,63.8,1,47.2,0,19,4,Cloud Infrastructure,West Bengal,10,7,1
+74.2,84.2,1,32.1,1,20,5,Data Science and AI,Uttar Pradesh,5,5,1
+66.0,93.7,1,17.0,0,11,2,Healthcare Technology,Maharashtra,5,6,1
+81.2,75.9,0,30.4,1,18,3,Healthcare Technology,Telangana,3,2,1
+81.1,85.4,1,18.0,0,15,0,Cloud Infrastructure,Maharashtra,18,12,1
+89.4,90.7,1,79.6,0,20,3,Cloud Infrastructure,Uttar Pradesh,19,11,1
+63.5,65.0,1,49.8,0,19,0,Industrial Electronics,Uttar Pradesh,24,5,1
+73.3,63.1,0,15.3,0,15,5,Data Science and AI,Telangana,19,9,1
+80.5,66.2,1,74.7,1,18,4,Data Science and AI,Rajasthan,21,5,1
+57.2,64.8,1,67.9,0,10,2,Information Technology,Telangana,19,11,1
+84.3,58.6,1,44.6,0,8,3,Data Science and AI,Telangana,23,7,1
+100,97.0,1,50.3,1,20,5,Information Technology,Maharashtra,8,11,1
+68.7,48.8,0,51.0,1,15,0,Healthcare Technology,Rajasthan,15,7,0
+75.0,79.6,0,38.8,0,18,3,Data Science and AI,Maharashtra,24,10,1
+81.7,95.1,1,67.7,0,16,3,Data Science and AI,Uttar Pradesh,13,2,1
+61.7,95.1,1,63.2,0,16,1,Healthcare Technology,West Bengal,9,9,1
+100,80.6,1,11.0,0,11,0,Healthcare Technology,Tamil Nadu,14,3,1
+89.4,65.9,1,39.1,0,15,1,Industrial Electronics,Tamil Nadu,14,10,1
+100,71.8,0,64.1,1,13,4,Healthcare Technology,Telangana,8,2,1
+88.3,51.8,1,70.6,0,15,2,Data Science and AI,Rajasthan,10,10,1
+81.7,85.2,1,69.9,0,13,5,Cloud Infrastructure,Rajasthan,15,8,1
+73.9,72.1,1,51.3,1,15,0,Cloud Infrastructure,Maharashtra,16,9,1
+62.8,100.0,1,53.6,0,9,2,Cloud Infrastructure,Rajasthan,21,10,1
+56.1,45.1,1,47.9,1,11,5,Data Science and AI,Uttar Pradesh,21,6,1
+62.0,73.8,0,21.6,0,8,0,Information Technology,Telangana,10,2,0
+72.1,79.1,1,49.6,1,10,1,Data Science and AI,Rajasthan,2,11,1
+70.4,84.5,1,27.9,0,20,3,Healthcare Technology,Tamil Nadu,9,12,1
+65.1,77.9,1,54.7,0,12,3,Information Technology,Rajasthan,9,5,1
+72.3,50.8,1,30.7,1,18,3,Industrial Electronics,Maharashtra,8,2,1
+77.1,38.0,1,64.3,0,20,2,Healthcare Technology,Uttar Pradesh,7,12,0
+62.5,45.0,1,31.6,0,17,2,Cloud Infrastructure,Karnataka,23,4,0
+70.8,88.5,0,65.1,1,13,4,Data Science and AI,Tamil Nadu,16,6,1
+100,86.7,1,66.3,0,9,1,Industrial Electronics,Rajasthan,24,5,1
+60.4,95.8,0,47.6,0,18,5,Healthcare Technology,Rajasthan,21,6,1
+46.0,62.8,1,76.0,0,17,1,Information Technology,West Bengal,20,3,0
+73.6,64.8,0,12.6,1,9,0,Data Science and AI,Tamil Nadu,7,10,1
+87.3,46.1,0,39.0,0,15,4,Healthcare Technology,Maharashtra,13,6,1
+81.3,91.1,0,35.4,1,13,4,Data Science and AI,Maharashtra,20,7,1
+83.8,100,0,24.8,1,8,0,Information Technology,Uttar Pradesh,25,7,1
+80.3,60.1,1,48.8,1,11,2,Cloud Infrastructure,Maharashtra,24,4,1
+100,40.8,0,70.7,0,13,1,Cloud Infrastructure,Maharashtra,18,7,0
+77.2,81.3,1,18.0,0,15,2,Cloud Infrastructure,Karnataka,16,11,1
+81.2,100,1,46.5,0,8,0,Healthcare Technology,Rajasthan,15,8,1
+45.2,74.4,0,15.7,1,9,1,Information Technology,Gujarat,8,11,1
+91.8,48.5,0,59.1,1,18,4,Data Science and AI,Rajasthan,23,5,1
+89.8,60.0,1,37.9,1,13,3,Industrial Electronics,Telangana,10,12,1
+84.1,100,0,16.8,1,20,1,Industrial Electronics,Gujarat,17,2,1
+52.2,91.5,1,39.6,1,8,2,Information Technology,Gujarat,19,6,1
+88.8,64.9,0,69.2,0,20,2,Cloud Infrastructure,Rajasthan,18,5,1
+100,66.7,1,55.0,0,18,5,Healthcare Technology,Tamil Nadu,8,2,1
+100,65.2,0,56.0,0,19,5,Data Science and AI,Uttar Pradesh,0,3,1
+66.0,79.9,1,60.5,1,17,4,Industrial Electronics,Tamil Nadu,2,2,1
+95.4,68.3,1,40.9,0,20,4,Information Technology,Rajasthan,3,7,1
+73.3,98.5,1,56.7,0,14,4,Information Technology,Uttar Pradesh,1,2,1
+87.8,73.3,0,44.8,0,10,3,Cloud Infrastructure,Gujarat,17,5,1
+58.3,89.9,1,42.2,0,13,4,Information Technology,Rajasthan,13,11,1
+62.9,33.2,0,76.3,0,19,2,Information Technology,Karnataka,2,8,0
+64.0,79.2,0,70.9,1,11,2,Cloud Infrastructure,Karnataka,24,4,1
+77.5,82.8,1,77.1,1,10,1,Healthcare Technology,Telangana,3,4,1
+82.0,81.2,1,15.3,1,18,3,Cloud Infrastructure,West Bengal,14,11,1
+49.8,50.7,1,40.8,0,18,2,Healthcare Technology,Maharashtra,25,6,1
+65.1,71.3,1,14.0,1,9,5,Data Science and AI,Rajasthan,2,11,1
+82.4,40.8,1,32.5,0,10,0,Information Technology,Gujarat,14,3,1
+68.8,71.7,0,40.6,0,16,4,Information Technology,Gujarat,5,7,1
+70.7,69.4,1,33.4,0,16,5,Data Science and AI,Telangana,12,6,1
+87.4,60.4,1,19.9,0,18,5,Healthcare Technology,Tamil Nadu,21,8,1
+58.1,47.9,1,18.9,1,19,5,Data Science and AI,Rajasthan,16,3,1
+68.8,85.0,0,25.0,1,15,1,Healthcare Technology,Tamil Nadu,7,4,1
+91.5,49.6,1,46.9,1,20,4,Information Technology,Rajasthan,4,11,1
+92.8,100,1,66.6,0,15,0,Cloud Infrastructure,Uttar Pradesh,13,7,1
+74.1,73.3,1,64.9,1,11,2,Industrial Electronics,West Bengal,21,11,1
+81.2,41.0,1,39.3,0,11,4,Industrial Electronics,Maharashtra,4,6,1
+54.3,98.0,1,18.7,0,10,2,Healthcare Technology,Tamil Nadu,14,10,1
+100,93.5,1,71.9,1,14,0,Industrial Electronics,Gujarat,12,10,1
+100,74.5,0,60.0,0,10,1,Data Science and AI,West Bengal,1,6,1
+78.9,51.8,1,73.4,0,11,1,Cloud Infrastructure,Rajasthan,17,11,1
+86.0,81.6,1,53.6,0,15,4,Data Science and AI,Uttar Pradesh,17,2,1
+77.8,73.0,1,49.9,0,18,0,Cloud Infrastructure,Karnataka,16,7,1
+72.6,55.1,1,54.5,1,12,5,Healthcare Technology,Karnataka,0,7,1
+79.2,98.3,0,50.7,1,10,0,Data Science and AI,Gujarat,11,10,1
+69.4,92.4,0,19.4,1,15,0,Industrial Electronics,Maharashtra,9,5,1
+87.8,61.7,1,37.9,1,15,2,Cloud Infrastructure,Uttar Pradesh,1,12,1
+100,82.8,0,35.8,1,19,3,Information Technology,Tamil Nadu,12,7,1
+72.9,55.9,1,28.7,0,14,0,Industrial Electronics,Tamil Nadu,13,11,1
+74.3,64.9,1,60.2,0,15,2,Information Technology,Gujarat,14,2,1
+90.0,71.8,1,76.4,0,18,3,Healthcare Technology,Tamil Nadu,11,10,1
+75.6,63.6,0,26.5,1,13,3,Healthcare Technology,Tamil Nadu,18,2,1
+91.7,66.5,1,50.2,0,14,2,Industrial Electronics,Uttar Pradesh,20,6,1
+77.2,54.2,1,28.3,0,15,1,Cloud Infrastructure,West Bengal,19,6,1
+99.1,96.5,1,72.9,0,9,5,Cloud Infrastructure,Gujarat,10,12,1
+59.7,99.3,1,74.9,1,20,2,Data Science and AI,Karnataka,16,5,1
+80.9,59.2,1,35.3,1,15,4,Cloud Infrastructure,Karnataka,4,11,1
+84.1,41.6,1,15.2,1,18,0,Industrial Electronics,Gujarat,14,9,1
+96.8,50.3,1,22.7,1,14,4,Cloud Infrastructure,Tamil Nadu,1,3,1
+86.4,47.7,1,69.2,0,18,4,Cloud Infrastructure,Telangana,8,4,1
+60.7,67.6,0,75.9,0,18,4,Healthcare Technology,Gujarat,23,11,1
+61.9,100,1,28.5,0,17,3,Information Technology,Maharashtra,19,12,1
+92.4,57.5,1,31.1,0,20,5,Industrial Electronics,West Bengal,12,6,1
+80.3,54.6,1,20.1,1,13,5,Industrial Electronics,Tamil Nadu,11,8,1
+70.9,71.2,0,18.6,0,10,0,Data Science and AI,Rajasthan,1,6,1
+66.2,88.3,1,23.3,0,16,3,Cloud Infrastructure,West Bengal,15,6,1
+90.7,81.6,1,26.9,1,8,0,Information Technology,West Bengal,9,9,1
+79.9,38.2,1,63.5,0,14,0,Information Technology,Uttar Pradesh,18,10,1
+72.5,69.7,1,63.5,0,17,5,Data Science and AI,Tamil Nadu,19,3,1
+75.7,55.9,0,52.2,0,8,0,Data Science and AI,Gujarat,1,4,0
+69.5,70.8,1,19.8,1,13,1,Industrial Electronics,Telangana,12,11,1
+68.1,44.3,1,67.1,0,18,0,Healthcare Technology,Telangana,13,11,0
+68.3,63.9,1,78.0,1,11,5,Information Technology,West Bengal,1,11,1
+96.5,74.7,1,27.0,1,19,0,Healthcare Technology,West Bengal,6,2,1
+64.5,81.1,0,45.1,1,15,5,Data Science and AI,Tamil Nadu,23,2,1
+75.7,56.6,0,73.8,0,13,5,Industrial Electronics,Telangana,24,12,1
+40.5,76.5,1,30.9,1,12,2,Healthcare Technology,West Bengal,22,5,1
+90.7,66.5,1,72.7,0,13,1,Data Science and AI,Telangana,9,2,1
+68.8,88.0,1,43.5,0,16,2,Information Technology,Tamil Nadu,17,6,1
+93.6,73.3,1,54.7,0,14,2,Cloud Infrastructure,Karnataka,22,9,1
+97.0,72.7,1,38.5,1,15,3,Cloud Infrastructure,Telangana,20,5,1
+97.5,64.5,1,69.5,0,10,3,Information Technology,Rajasthan,5,2,1
+87.7,99.6,1,30.3,0,12,4,Industrial Electronics,Gujarat,19,3,1
+100,34.7,0,45.3,0,20,0,Healthcare Technology,West Bengal,10,4,0
+77.5,69.0,1,30.7,1,11,1,Data Science and AI,Rajasthan,19,12,1
+62.0,65.5,1,43.4,1,8,2,Information Technology,West Bengal,12,5,1
+90.2,67.7,1,10.8,1,19,1,Data Science and AI,Karnataka,1,12,1
+79.9,100,1,58.3,1,12,2,Healthcare Technology,Uttar Pradesh,19,5,1
+61.6,74.7,1,36.2,1,15,4,Cloud Infrastructure,Uttar Pradesh,25,12,1
+55.4,77.2,1,59.3,0,17,0,Healthcare Technology,Uttar Pradesh,1,10,1
+69.2,69.5,1,40.9,1,19,4,Healthcare Technology,West Bengal,15,3,1
+62.6,52.0,1,57.1,0,8,3,Healthcare Technology,Uttar Pradesh,8,2,1
+92.1,80.4,1,47.9,0,9,3,Healthcare Technology,Rajasthan,1,6,1
+85.3,45.3,1,74.2,0,9,5,Industrial Electronics,Tamil Nadu,21,10,1
+100,100,1,18.9,1,8,0,Data Science and AI,Rajasthan,9,9,1
+72.4,61.9,0,71.3,1,8,5,Cloud Infrastructure,Maharashtra,13,11,1
+79.9,80.0,0,51.8,1,8,1,Cloud Infrastructure,Rajasthan,23,2,1
+85.0,100,0,74.1,1,17,4,Information Technology,Gujarat,24,12,1
+75.3,81.5,1,25.5,0,8,4,Cloud Infrastructure,Rajasthan,18,4,1
+76.4,97.1,1,32.3,0,10,2,Data Science and AI,West Bengal,12,4,1
+85.4,59.6,1,66.4,1,16,3,Cloud Infrastructure,Tamil Nadu,13,10,1
+85.4,47.4,1,16.5,1,11,0,Data Science and AI,Maharashtra,8,8,1
+87.6,100,1,49.1,0,13,2,Information Technology,Uttar Pradesh,0,5,1
+76.2,95.8,1,37.8,0,13,2,Industrial Electronics,Gujarat,12,9,1
+76.7,93.5,1,16.9,1,15,2,Data Science and AI,Gujarat,6,7,1
+87.9,71.8,1,50.9,1,12,1,Cloud Infrastructure,Uttar Pradesh,6,7,1
+67.8,66.3,1,76.0,0,20,3,Industrial Electronics,West Bengal,23,12,1
+83.9,86.0,1,74.2,0,18,0,Data Science and AI,Karnataka,16,2,1
+79.4,53.5,1,26.2,1,8,1,Information Technology,Gujarat,16,9,1
+85.9,94.5,0,47.3,0,8,4,Healthcare Technology,Telangana,23,6,1
+54.8,71.6,1,75.8,0,9,4,Information Technology,Uttar Pradesh,4,5,1
+70.2,70.0,1,38.4,1,19,1,Data Science and AI,Karnataka,9,12,1
+90.2,81.7,1,13.9,0,10,0,Information Technology,Gujarat,15,8,1
+66.1,100,0,73.1,1,17,3,Information Technology,Karnataka,8,2,1
+93.6,58.3,0,75.0,0,11,4,Data Science and AI,Karnataka,4,8,1
+96.4,81.1,1,33.2,1,10,5,Healthcare Technology,Gujarat,23,3,1
+86.9,79.5,0,52.4,1,17,3,Information Technology,Maharashtra,24,7,1
+58.4,55.1,1,40.2,1,18,3,Industrial Electronics,Telangana,2,11,1
+76.6,64.8,0,59.8,1,19,3,Cloud Infrastructure,Karnataka,10,7,1
+97.5,62.9,0,23.1,0,16,4,Industrial Electronics,Maharashtra,13,3,1
+74.0,78.3,1,32.7,0,12,3,Information Technology,Uttar Pradesh,12,3,1
+74.0,78.9,1,20.2,0,12,3,Industrial Electronics,Karnataka,9,9,1
+77.9,85.5,1,51.6,0,9,1,Data Science and AI,Rajasthan,9,2,1
+96.1,54.2,1,55.6,1,12,2,Data Science and AI,West Bengal,19,5,1
+84.6,88.3,1,61.4,1,17,1,Data Science and AI,Telangana,10,8,1
+64.3,82.9,1,22.6,1,8,5,Information Technology,West Bengal,14,5,1
+80.8,66.1,1,65.7,1,10,5,Data Science and AI,Telangana,9,5,1
+58.0,100,1,38.1,0,19,3,Industrial Electronics,Gujarat,17,2,1
+50.4,49.8,0,27.4,1,10,5,Healthcare Technology,Rajasthan,19,2,1
+75.2,78.5,0,62.3,1,19,4,Industrial Electronics,Gujarat,7,9,1
+56.0,78.2,1,20.6,1,15,0,Industrial Electronics,Karnataka,9,8,1
+100,62.4,1,46.5,0,9,3,Cloud Infrastructure,Gujarat,23,9,1
+69.5,100,0,69.4,1,18,1,Information Technology,Tamil Nadu,23,5,1
+73.7,84.6,1,22.9,1,14,3,Industrial Electronics,Uttar Pradesh,0,11,1
+65.5,62.2,1,24.4,1,20,0,Industrial Electronics,Tamil Nadu,18,3,1
+85.4,69.2,1,54.7,1,17,3,Information Technology,Gujarat,18,3,1
+89.7,51.4,1,59.4,0,17,4,Data Science and AI,Tamil Nadu,2,12,1
+88.2,83.3,1,39.3,0,14,3,Information Technology,Tamil Nadu,5,9,1
+84.2,84.9,0,68.9,1,13,0,Healthcare Technology,Uttar Pradesh,15,4,1
+42.6,61.4,1,59.7,0,10,0,Healthcare Technology,Uttar Pradesh,18,2,0
+88.5,74.6,1,64.7,1,20,3,Data Science and AI,Karnataka,17,10,1
+72.8,79.6,1,12.9,1,16,1,Healthcare Technology,Uttar Pradesh,13,3,1
+80.7,68.7,1,70.4,0,9,1,Data Science and AI,Gujarat,6,11,1
+62.2,77.0,0,24.5,0,13,4,Industrial Electronics,Tamil Nadu,8,11,1
+90.4,70.0,1,76.7,0,18,0,Data Science and AI,Maharashtra,4,8,1
+76.6,69.1,0,32.5,0,18,3,Cloud Infrastructure,Telangana,15,4,1
+73.8,77.0,1,63.8,0,19,2,Industrial Electronics,West Bengal,22,7,1
+73.9,95.7,0,78.1,1,19,2,Information Technology,Rajasthan,2,10,1
+100,65.3,1,32.6,0,16,4,Cloud Infrastructure,West Bengal,4,11,1
+47.1,96.2,1,11.1,1,10,3,Information Technology,Rajasthan,14,2,1
+100,70.9,1,31.1,1,12,0,Cloud Infrastructure,Telangana,20,7,1
+89.0,95.9,1,62.9,0,9,5,Cloud Infrastructure,Uttar Pradesh,3,2,1
+95.8,83.4,1,41.2,0,13,0,Industrial Electronics,West Bengal,13,4,1
+84.3,85.7,1,36.8,1,10,5,Information Technology,Karnataka,21,4,1
+59.0,62.4,0,34.6,0,19,1,Healthcare Technology,West Bengal,13,11,1
+73.1,77.9,1,34.6,0,20,1,Information Technology,Karnataka,7,6,1
+58.8,64.0,1,64.5,1,18,2,Cloud Infrastructure,Uttar Pradesh,6,10,1
+65.4,78.7,0,37.0,0,18,4,Information Technology,Maharashtra,2,10,1
+85.3,68.1,1,49.8,0,18,1,Data Science and AI,Karnataka,24,9,1
+78.6,80.7,1,37.9,0,19,4,Data Science and AI,Rajasthan,24,8,1
+94.2,83.1,1,29.4,0,16,1,Industrial Electronics,Gujarat,25,4,1
+91.5,64.9,1,26.7,0,14,0,Information Technology,Maharashtra,14,11,1
+66.9,49.2,0,10.9,0,8,1,Data Science and AI,Telangana,15,7,1
+84.8,71.0,1,33.5,0,16,0,Data Science and AI,Karnataka,8,11,1
+64.4,76.7,1,49.7,0,12,0,Industrial Electronics,Karnataka,18,12,1
+95.7,73.8,0,35.5,1,10,0,Information Technology,Rajasthan,17,12,1
+71.2,88.8,1,29.0,0,13,0,Cloud Infrastructure,Maharashtra,16,12,1
+100,78.5,1,29.8,1,13,0,Information Technology,Maharashtra,17,9,1
+83.9,94.1,1,53.6,0,17,3,Data Science and AI,Uttar Pradesh,24,5,1
+100,73.8,1,71.4,1,8,5,Information Technology,Karnataka,12,6,1
+67.1,69.5,1,14.2,1,19,2,Cloud Infrastructure,Uttar Pradesh,2,2,1
+67.1,43.1,1,45.4,1,14,0,Data Science and AI,Maharashtra,18,11,1
+73.8,63.9,1,69.6,1,14,5,Industrial Electronics,Gujarat,23,7,1
+81.2,92.3,0,17.4,0,13,3,Cloud Infrastructure,Gujarat,3,10,1
+62.0,78.0,1,16.3,1,12,5,Cloud Infrastructure,Maharashtra,22,11,1
+100,83.4,1,45.9,1,12,1,Cloud Infrastructure,West Bengal,0,8,1
+77.9,58.4,1,66.3,0,8,0,Healthcare Technology,Tamil Nadu,24,5,1
+92.4,59.9,1,11.5,0,18,3,Information Technology,Karnataka,25,4,1
+100,100,0,74.7,0,19,3,Data Science and AI,Rajasthan,15,2,1
+69.6,84.1,1,20.4,1,17,1,Cloud Infrastructure,West Bengal,20,6,1
+90.7,58.2,0,36.8,0,18,4,Industrial Electronics,Maharashtra,7,12,1
+76.3,40.9,1,49.6,0,12,1,Data Science and AI,Uttar Pradesh,0,7,0
+98.7,53.0,0,79.4,0,20,4,Information Technology,Karnataka,7,4,1
+89.1,88.3,0,79.7,0,20,3,Healthcare Technology,Tamil Nadu,11,4,0
+55.3,54.1,1,74.0,0,19,2,Cloud Infrastructure,Tamil Nadu,18,11,1
+74.3,61.2,0,13.9,1,8,4,Industrial Electronics,Gujarat,15,2,1
+80.4,81.1,1,74.3,1,13,0,Healthcare Technology,Tamil Nadu,0,4,1
+49.3,88.9,1,37.7,0,12,2,Data Science and AI,Rajasthan,4,4,1
+72.5,63.0,1,58.5,1,20,2,Industrial Electronics,Tamil Nadu,7,12,1
+94.9,92.3,1,76.4,0,20,4,Data Science and AI,Gujarat,1,4,1
+81.5,94.9,1,19.8,1,11,2,Healthcare Technology,Karnataka,10,4,1
+57.9,58.7,0,14.7,0,9,5,Data Science and AI,Rajasthan,0,2,1
+73.7,30,1,44.5,0,16,3,Industrial Electronics,Uttar Pradesh,3,9,1
+83.0,67.6,1,15.2,0,14,1,Information Technology,Karnataka,23,3,1
+60.8,58.2,1,12.2,1,10,4,Data Science and AI,Maharashtra,13,4,1
+84.0,52.7,1,47.8,1,12,1,Cloud Infrastructure,Rajasthan,3,2,1
+61.4,65.6,0,10.3,0,18,5,Healthcare Technology,Uttar Pradesh,19,9,1
+83.8,92.2,0,64.9,0,18,2,Data Science and AI,Rajasthan,2,12,1
+67.9,84.8,0,13.1,0,12,1,Cloud Infrastructure,Maharashtra,8,11,1
+96.8,86.2,1,77.9,1,16,0,Information Technology,Rajasthan,12,10,1
+64.4,33.0,1,26.5,0,14,5,Healthcare Technology,Tamil Nadu,1,10,1
+95.3,82.3,0,23.5,0,9,5,Cloud Infrastructure,Tamil Nadu,13,5,1
+76.4,100,1,14.7,0,14,4,Healthcare Technology,West Bengal,10,6,1
+76.8,45.2,0,20.5,1,17,0,Healthcare Technology,Karnataka,3,11,0
+98.8,44.6,1,28.5,1,17,4,Data Science and AI,Tamil Nadu,15,2,1
+86.3,64.3,1,71.5,1,8,5,Healthcare Technology,Gujarat,15,6,1
+64.0,99.2,1,69.0,1,18,0,Information Technology,Telangana,7,4,1
+75.4,69.7,1,23.2,0,14,5,Data Science and AI,Gujarat,15,10,1
+69.2,71.0,1,45.5,0,16,4,Information Technology,Uttar Pradesh,0,4,1
+70.9,72.1,1,59.3,0,15,4,Information Technology,Karnataka,12,12,1
+78.9,92.8,1,77.2,0,16,2,Information Technology,Telangana,11,4,1
+55.1,77.7,1,64.6,0,11,5,Data Science and AI,Uttar Pradesh,7,12,1
+67.6,54.4,1,77.7,1,15,1,Data Science and AI,Maharashtra,20,4,1
+98.3,65.4,1,72.7,1,15,2,Data Science and AI,Telangana,6,9,1
+84.8,55.8,0,45.8,1,13,4,Healthcare Technology,Telangana,20,11,1
+84.8,64.5,1,29.4,1,18,2,Information Technology,Uttar Pradesh,6,4,1
+87.2,41.5,1,56.2,1,19,0,Information Technology,Telangana,20,9,1
+93.6,70.0,1,67.1,0,19,1,Industrial Electronics,West Bengal,21,10,1
+49.0,70.4,1,71.4,0,9,3,Data Science and AI,Tamil Nadu,4,6,1
+67.5,74.2,1,39.4,1,13,2,Information Technology,West Bengal,18,6,1
+48.4,78.6,1,76.1,0,11,4,Information Technology,Rajasthan,3,12,1
+75.1,79.8,1,49.9,1,15,1,Cloud Infrastructure,Karnataka,10,4,1
+56.1,100,1,14.1,0,11,1,Industrial Electronics,West Bengal,18,4,1
+52.5,52.8,1,77.6,0,8,4,Cloud Infrastructure,Maharashtra,6,7,0
+78.8,49.9,0,10.3,1,11,5,Data Science and AI,Tamil Nadu,11,6,1
+88.7,88.7,1,30.4,1,17,4,Data Science and AI,Tamil Nadu,10,8,1
+95.4,71.5,1,21.5,1,20,3,Data Science and AI,Uttar Pradesh,0,5,1
+70.1,62.7,1,55.5,0,18,2,Information Technology,Maharashtra,24,10,1
+100,71.1,1,11.4,1,14,3,Healthcare Technology,Telangana,12,3,1
+79.4,63.6,1,28.9,1,10,3,Information Technology,Karnataka,3,10,1
+83.4,77.6,0,24.0,0,16,1,Data Science and AI,Telangana,11,8,1
+94.0,64.2,0,10.9,0,9,4,Cloud Infrastructure,Tamil Nadu,21,9,1
+79.1,65.0,1,73.3,1,15,2,Information Technology,Maharashtra,8,9,1
+83.5,82.2,1,39.8,0,20,0,Information Technology,Tamil Nadu,0,4,1
+67.9,87.1,1,71.5,0,13,1,Data Science and AI,Rajasthan,3,8,1
+75.2,64.4,1,72.0,0,10,5,Industrial Electronics,Tamil Nadu,23,2,1
+60.7,84.1,1,57.5,0,14,2,Information Technology,Tamil Nadu,19,2,1
+79.8,65.9,1,10.9,1,16,5,Industrial Electronics,Uttar Pradesh,18,11,1
+55.3,68.7,1,40.3,1,15,2,Data Science and AI,Rajasthan,21,12,1
+100,96.3,0,69.4,1,10,0,Healthcare Technology,Gujarat,24,9,1
+72.1,84.7,1,48.5,0,11,0,Cloud Infrastructure,West Bengal,14,9,1
+87.3,87.5,1,17.2,0,16,4,Data Science and AI,Telangana,0,3,1
+57.8,62.0,1,33.9,1,11,3,Healthcare Technology,West Bengal,10,10,1
+64.1,94.9,0,33.9,1,20,2,Industrial Electronics,Gujarat,17,10,1
+86.6,75.1,0,60.2,1,9,2,Information Technology,Uttar Pradesh,19,5,1
+98.2,41.7,1,17.5,0,18,5,Cloud Infrastructure,West Bengal,18,3,1
+57.6,34.2,0,44.9,0,8,4,Industrial Electronics,West Bengal,13,11,1
+66.0,68.0,1,17.2,1,17,2,Cloud Infrastructure,Rajasthan,16,8,1
+100.0,56.6,1,77.5,1,15,1,Healthcare Technology,Telangana,4,8,1
+62.2,62.0,1,24.1,1,12,5,Data Science and AI,Tamil Nadu,11,12,1
+54.9,71.3,1,18.1,0,15,4,Cloud Infrastructure,Rajasthan,18,12,1
+49.8,64.2,1,46.6,0,10,0,Healthcare Technology,Uttar Pradesh,21,2,1
+78.0,61.3,1,27.5,1,19,2,Data Science and AI,Maharashtra,6,10,1
+90.8,91.9,1,62.0,1,11,4,Healthcare Technology,Maharashtra,25,6,1
+49.4,100,1,31.9,1,8,5,Industrial Electronics,West Bengal,8,5,1
+49.1,72.7,1,64.3,1,12,3,Data Science and AI,Karnataka,5,12,1
+100,65.1,0,12.8,0,12,1,Cloud Infrastructure,Telangana,5,11,1
+78.6,100,1,64.2,1,18,2,Cloud Infrastructure,Gujarat,15,11,1
+80.8,56.6,0,22.9,0,16,1,Information Technology,Rajasthan,13,10,1
+83.8,63.6,1,76.5,1,15,4,Cloud Infrastructure,Maharashtra,24,12,1
+70.1,54.9,1,53.0,1,8,5,Information Technology,Karnataka,10,8,1
+90.3,93.5,1,46.0,0,15,0,Data Science and AI,Uttar Pradesh,9,12,1
+41.6,68.2,0,76.9,0,8,5,Data Science and AI,Uttar Pradesh,2,5,0
+66.2,81.3,1,61.9,0,9,5,Information Technology,Maharashtra,21,4,1
+77.1,67.1,0,22.5,0,9,4,Industrial Electronics,Rajasthan,7,6,1
+91.7,64.8,0,10.4,1,9,5,Industrial Electronics,Karnataka,18,2,1
+84.4,68.3,1,31.1,0,20,3,Data Science and AI,Maharashtra,12,8,1
+81.0,71.3,1,30.6,1,12,5,Cloud Infrastructure,Gujarat,25,12,1
+60.0,64.4,0,10.4,1,16,4,Information Technology,Uttar Pradesh,2,6,1
+45.6,81.3,1,20.0,0,17,2,Data Science and AI,Tamil Nadu,6,3,1
+95.5,43.9,1,79.6,0,16,0,Healthcare Technology,Karnataka,9,12,1
+87.9,55.9,0,55.9,0,17,0,Healthcare Technology,West Bengal,6,7,0
+67.6,95.3,1,20.7,1,20,2,Industrial Electronics,Maharashtra,13,4,1
+100,69.2,1,33.2,0,15,2,Industrial Electronics,West Bengal,24,6,1
+94.7,88.4,0,29.6,1,16,1,Healthcare Technology,Karnataka,8,12,1
+46.7,49.7,1,63.8,0,8,4,Healthcare Technology,West Bengal,8,10,0
+70.9,81.6,1,61.3,0,15,4,Cloud Infrastructure,Rajasthan,16,3,1
+79.7,90.8,1,21.6,0,15,1,Cloud Infrastructure,Tamil Nadu,5,11,1
+82.0,70.1,1,26.2,0,11,0,Industrial Electronics,Gujarat,21,5,1
+99.7,97.2,0,77.8,1,12,5,Information Technology,Tamil Nadu,8,11,1
+69.9,57.9,1,68.5,0,14,1,Industrial Electronics,Gujarat,16,8,1
+65.4,73.6,1,40.8,0,16,5,Industrial Electronics,Tamil Nadu,8,5,1
+89.2,92.4,1,56.3,0,13,5,Cloud Infrastructure,West Bengal,3,9,1
+80.6,77.3,1,21.3,1,8,4,Industrial Electronics,Tamil Nadu,4,2,1
+94.0,61.8,1,77.8,1,19,5,Data Science and AI,Karnataka,21,6,1
+98.0,79.4,1,52.1,1,20,1,Industrial Electronics,Telangana,19,12,1
+75.8,55.7,1,51.3,0,14,1,Cloud Infrastructure,Uttar Pradesh,3,2,0
+73.3,83.4,0,73.1,1,20,4,Industrial Electronics,Karnataka,16,3,1
+60.6,39.3,1,10.1,1,18,5,Industrial Electronics,Rajasthan,13,10,1
+81.3,33.7,1,63.8,0,20,5,Healthcare Technology,Karnataka,24,11,1
+89.4,87.3,0,70.1,0,16,3,Industrial Electronics,Maharashtra,8,5,1
+52.4,50.4,1,24.4,1,14,2,Healthcare Technology,Rajasthan,3,4,1
+77.3,100,1,35.6,0,18,3,Healthcare Technology,Rajasthan,24,5,1
+71.8,56.3,1,31.5,0,19,3,Cloud Infrastructure,Karnataka,23,4,1
+56.0,81.2,0,25.0,0,13,4,Cloud Infrastructure,Maharashtra,19,12,1
+100,83.2,1,52.0,0,12,1,Information Technology,Maharashtra,11,3,1
+91.8,64.3,1,30.1,1,8,1,Industrial Electronics,West Bengal,20,9,1
+80.0,70.9,1,46.1,0,10,5,Healthcare Technology,Uttar Pradesh,1,7,1
+84.3,70.8,1,38.0,1,14,4,Information Technology,Maharashtra,6,10,1
+72.4,44.4,1,50.8,0,12,1,Information Technology,West Bengal,19,5,1
+67.6,65.7,1,17.5,0,12,2,Industrial Electronics,Telangana,3,10,1
+58.7,72.0,1,43.9,0,13,3,Healthcare Technology,Maharashtra,21,9,1
+82.2,76.5,1,79.6,1,11,2,Industrial Electronics,Maharashtra,13,7,1
+66.8,94.5,1,15.3,1,15,2,Data Science and AI,Telangana,11,5,1
+99.5,63.1,1,44.9,0,19,1,Cloud Infrastructure,Uttar Pradesh,8,5,1
+88.9,52.7,0,15.5,1,15,4,Healthcare Technology,Maharashtra,0,10,1
+69.0,83.3,1,71.7,1,12,3,Industrial Electronics,Telangana,5,10,1
+93.0,100,1,47.9,0,14,5,Cloud Infrastructure,West Bengal,24,4,1
+72.7,53.1,1,10.8,0,17,0,Information Technology,Telangana,10,7,1
+88.8,47.6,1,44.9,0,19,2,Data Science and AI,Telangana,11,8,1
+81.4,80.6,1,26.0,0,12,1,Industrial Electronics,Rajasthan,17,8,1
+100,69.5,1,19.4,1,18,4,Cloud Infrastructure,West Bengal,17,7,1
+77.8,100,0,16.9,0,11,2,Data Science and AI,Karnataka,15,12,1
+82.2,57.3,1,34.1,0,13,5,Data Science and AI,Tamil Nadu,19,5,1
+64.2,93.3,1,61.6,1,14,4,Data Science and AI,Tamil Nadu,9,9,1
+62.2,50.2,1,73.5,0,13,1,Data Science and AI,Telangana,10,7,1
+66.1,60.9,1,64.7,1,19,4,Data Science and AI,Rajasthan,16,9,1
+100,68.3,1,59.0,0,10,3,Cloud Infrastructure,Karnataka,3,3,1
+74.7,70.8,1,63.5,0,12,4,Industrial Electronics,Rajasthan,4,3,1
+88.5,63.2,1,21.9,0,13,2,Data Science and AI,Telangana,15,9,1
+40.7,88.2,1,22.4,1,18,5,Healthcare Technology,Rajasthan,20,11,1
+74.9,89.3,0,16.3,0,14,2,Data Science and AI,Maharashtra,4,6,1
+53.0,67.6,0,30.1,0,19,3,Information Technology,Telangana,24,9,1
+78.9,45.7,1,23.2,1,14,3,Data Science and AI,Rajasthan,7,4,1
+79.1,79.2,1,46.2,1,17,5,Industrial Electronics,Telangana,21,6,1
+63.2,41.9,0,30.3,1,17,3,Data Science and AI,West Bengal,8,11,1
+74.3,81.3,1,11.5,1,12,2,Cloud Infrastructure,Maharashtra,4,9,1
+86.5,75.8,1,44.9,0,19,0,Industrial Electronics,Tamil Nadu,10,3,1
+76.5,89.9,1,22.7,1,12,3,Information Technology,Uttar Pradesh,0,3,1
+100,71.6,1,64.0,0,11,3,Cloud Infrastructure,Telangana,12,12,1
+91.2,96.4,1,48.5,0,15,5,Data Science and AI,Gujarat,9,5,1
+58.6,85.0,1,11.1,1,17,0,Cloud Infrastructure,Maharashtra,12,5,1
+57.9,58.6,1,20.8,1,11,1,Information Technology,Gujarat,15,3,1
+56.5,96.1,1,65.4,0,11,2,Information Technology,Gujarat,17,12,1
+77.7,68.3,1,60.7,0,8,3,Industrial Electronics,Telangana,22,9,1
+73.4,78.5,1,29.3,1,16,1,Healthcare Technology,Tamil Nadu,2,10,1
+74.7,85.5,1,10.1,1,14,5,Industrial Electronics,Gujarat,5,2,1
+67.1,59.8,1,46.7,0,16,1,Information Technology,Gujarat,19,6,1
+73.4,65.3,1,14.7,1,10,1,Industrial Electronics,Karnataka,1,5,1
+78.6,60.8,1,53.7,1,8,2,Healthcare Technology,Karnataka,7,11,1
+87.3,66.8,1,72.3,0,20,5,Information Technology,Rajasthan,1,7,1
+54.0,78.3,0,14.9,0,11,4,Information Technology,Uttar Pradesh,3,3,1
+70.6,79.8,1,49.9,1,16,5,Healthcare Technology,Karnataka,17,8,1
+58.4,66.4,0,65.5,0,16,2,Industrial Electronics,West Bengal,21,4,0
+93.5,58.9,1,69.1,0,18,3,Data Science and AI,Uttar Pradesh,23,7,1
+74.0,84.3,1,41.3,0,19,0,Healthcare Technology,Maharashtra,9,11,1
+98.8,100,0,78.9,0,13,0,Healthcare Technology,Tamil Nadu,24,6,1
+87.3,83.1,1,26.3,1,9,4,Cloud Infrastructure,Uttar Pradesh,12,11,1
+73.6,40.5,0,67.8,1,17,0,Information Technology,Telangana,19,12,1
+84.3,77.4,1,34.4,1,14,0,Industrial Electronics,Maharashtra,24,5,1
+95.2,79.3,1,49.5,0,19,1,Industrial Electronics,Rajasthan,4,2,1
+73.5,59.2,1,37.6,0,9,3,Healthcare Technology,Rajasthan,18,2,1
+93.2,82.8,1,19.1,0,16,1,Data Science and AI,Uttar Pradesh,15,8,1
+58.8,72.2,1,32.6,1,9,0,Healthcare Technology,Rajasthan,21,8,1
+70.4,84.9,1,11.7,0,13,4,Data Science and AI,Tamil Nadu,25,9,1
+90.5,77.4,1,69.7,0,8,1,Cloud Infrastructure,Telangana,19,4,1
+63.0,99.1,1,43.0,0,19,4,Information Technology,Telangana,6,5,1
+71.7,63.0,1,73.4,0,12,1,Cloud Infrastructure,Uttar Pradesh,1,6,0
+75.8,92.0,1,14.7,1,18,5,Healthcare Technology,Maharashtra,11,3,1
+100,74.1,1,17.0,0,17,4,Industrial Electronics,Uttar Pradesh,2,4,1
+96.8,67.2,1,12.8,1,12,2,Healthcare Technology,Tamil Nadu,15,8,1
+80.6,62.7,1,45.1,1,18,2,Data Science and AI,Telangana,12,2,1
+96.5,100,1,16.1,0,18,4,Cloud Infrastructure,Uttar Pradesh,20,12,1
+87.7,100,1,48.0,0,10,4,Industrial Electronics,Uttar Pradesh,17,12,1
+69.5,98.2,1,19.5,1,20,1,Cloud Infrastructure,Tamil Nadu,20,11,1
+95.5,85.8,0,12.1,0,14,3,Information Technology,Telangana,9,9,1
+79.3,63.6,0,63.4,1,12,4,Cloud Infrastructure,Uttar Pradesh,18,11,1
+71.8,54.6,1,45.2,1,19,5,Information Technology,Rajasthan,11,4,1
+69.1,73.8,0,38.6,1,12,3,Industrial Electronics,Uttar Pradesh,7,12,1
+72.5,86.0,1,42.0,0,14,0,Industrial Electronics,Gujarat,19,8,1
+59.1,52.9,1,46.8,1,20,0,Industrial Electronics,West Bengal,16,3,0
+86.2,54.1,1,49.0,0,18,0,Cloud Infrastructure,West Bengal,6,6,1
+97.3,51.4,1,21.7,0,8,5,Industrial Electronics,West Bengal,16,4,1
+63.6,95.7,1,58.7,0,14,2,Healthcare Technology,Tamil Nadu,14,2,1
+58.0,56.7,0,41.8,0,19,5,Industrial Electronics,Karnataka,22,4,1
+90.7,96.3,1,78.3,1,10,3,Data Science and AI,Maharashtra,17,8,1
+94.5,59.8,1,20.5,1,10,5,Cloud Infrastructure,Telangana,1,8,1
+100,69.3,1,77.2,0,20,2,Industrial Electronics,West Bengal,0,9,1
+76.4,71.5,1,26.7,1,15,3,Industrial Electronics,Karnataka,13,9,1
+77.0,67.5,1,24.5,0,8,5,Healthcare Technology,Tamil Nadu,11,2,1
+63.7,42.2,1,74.4,0,14,1,Information Technology,Telangana,5,12,0
+63.2,51.2,1,62.5,0,8,0,Healthcare Technology,Gujarat,24,6,1
+100,52.0,1,69.0,0,15,1,Data Science and AI,Gujarat,3,6,0
+74.9,65.4,1,54.0,1,15,5,Cloud Infrastructure,Telangana,22,11,1
+67.9,62.1,1,79.7,0,10,4,Industrial Electronics,West Bengal,18,9,1
+78.4,73.6,0,18.3,0,20,0,Healthcare Technology,Rajasthan,23,5,1
+91.3,76.7,1,24.9,1,19,2,Industrial Electronics,Telangana,8,3,1
+96.0,84.2,1,49.8,1,10,1,Information Technology,West Bengal,10,7,1
+84.3,47.2,1,53.9,1,16,2,Industrial Electronics,Maharashtra,14,8,1
+67.1,68.7,1,33.2,1,20,2,Data Science and AI,Telangana,2,4,1
+70.3,86.8,1,21.6,1,10,4,Information Technology,Gujarat,3,6,1
+66.4,58.7,1,76.6,0,12,1,Information Technology,Maharashtra,3,7,0
+91.9,61.9,0,43.8,0,11,2,Cloud Infrastructure,Telangana,15,10,1
+69.8,90.6,1,19.3,1,15,3,Information Technology,Karnataka,22,10,1
+76.3,77.0,1,71.0,0,8,0,Information Technology,Telangana,16,12,1
+81.6,66.9,1,32.3,0,9,2,Cloud Infrastructure,Telangana,4,4,1
+98.9,74.4,1,24.5,0,13,2,Information Technology,Uttar Pradesh,4,6,1
+89.4,66.4,0,73.2,0,14,0,Data Science and AI,Rajasthan,2,8,0
+69.1,35.6,1,58.3,0,13,2,Cloud Infrastructure,Karnataka,10,5,1
+73.9,64.8,1,58.9,0,12,5,Industrial Electronics,West Bengal,20,9,1
+85.9,68.7,1,28.1,0,10,5,Cloud Infrastructure,Gujarat,21,7,1
+79.1,87.6,1,29.8,0,17,1,Industrial Electronics,Rajasthan,16,3,1
+68.0,95.2,1,47.3,0,14,1,Information Technology,Tamil Nadu,19,5,1
+75.6,79.2,1,78.6,1,13,4,Data Science and AI,Tamil Nadu,22,5,1
+76.4,43.7,1,18.0,1,13,4,Information Technology,Tamil Nadu,3,9,1
+92.3,97.6,1,36.5,0,18,0,Healthcare Technology,Tamil Nadu,2,5,1
+95.5,57.4,0,20.3,0,16,2,Healthcare Technology,West Bengal,12,11,1
+99.4,62.2,1,74.3,1,19,2,Data Science and AI,Maharashtra,2,11,1

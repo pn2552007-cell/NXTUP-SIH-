@@ -23,9 +23,11 @@ def get_consent_status(current_user: User = Depends(get_current_user), db: Sessi
         }
 
     latest_consent = db.query(Consent).filter(Consent.trainee_id == trainee.id).order_by(Consent.consented_at.desc()).first()
+    nid = trainee.nextup_id or trainee.skillpulse_id
     return {
         "has_trainee_profile": True,
         "consent_given": trainee.consent_given,
+        "nextup_id": nid,
         "skillpulse_id": trainee.skillpulse_id,
         "consent_version": latest_consent.consent_version if latest_consent else "v1.0",
         "purpose": latest_consent.purpose if latest_consent else "Longitudinal tracking of employment, retention, and wage growth outcomes",
@@ -43,10 +45,11 @@ def submit_consent(
 ):
     trainee = db.query(Trainee).filter(Trainee.user_id == current_user.id).first()
     if not trainee and current_user.role == "TRAINEE":
-        skillpulse_id = generate_skillpulse_id(db)
+        unified_id = generate_skillpulse_id(db)
         trainee = Trainee(
             user_id=current_user.id,
-            skillpulse_id=skillpulse_id,
+            nextup_id=unified_id,
+            skillpulse_id=unified_id,
             full_name=current_user.full_name,
             email=current_user.email,
             phone=current_user.phone,
@@ -56,6 +59,11 @@ def submit_consent(
         db.flush()
 
     if trainee:
+        # Backfill unified IDs created before nextup_id existed.
+        if not trainee.nextup_id and trainee.skillpulse_id:
+            trainee.nextup_id = trainee.skillpulse_id
+        if not trainee.skillpulse_id and trainee.nextup_id:
+            trainee.skillpulse_id = trainee.nextup_id
         trainee.consent_given = consent_in.consent_status
         db.flush()
 
@@ -66,7 +74,7 @@ def submit_consent(
         consent_status=consent_in.consent_status,
         consent_version=consent_in.consent_version,
         purpose=consent_in.purpose,
-        consent_text=consent_in.consent_text or "I consent to SkillPulse tracking my training and employment outcomes.",
+        consent_text=consent_in.consent_text or "I consent to NEXTUP tracking my training and employment outcomes.",
         ip_address=client_ip,
         revocation_status=False,
         revocation_timestamp=None,
@@ -96,6 +104,7 @@ def submit_consent(
         id=consent_record.id,
         user_id=current_user.id,
         trainee_id=trainee.id if trainee else None,
+        nextup_id=(trainee.nextup_id if trainee else None),
         skillpulse_id=trainee.skillpulse_id if trainee else None,
         consent_status=consent_record.consent_status,
         consent_version=consent_record.consent_version,

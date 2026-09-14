@@ -21,10 +21,10 @@ def test_skillpulse_id_format_and_uniqueness(client):
     assert t2_res.status_code == 200
     id2 = t2_res.json()["skillpulse_id"]
 
-    # Verify SP-XXXXXXXX format (8 uppercase alphanumeric characters)
-    pattern = r"^SP-[A-Z0-9]{8}$"
-    assert re.match(pattern, id1), f"ID '{id1}' does not match pattern SP-XXXXXXXX"
-    assert re.match(pattern, id2), f"ID '{id2}' does not match pattern SP-XXXXXXXX"
+    # Verify NXT-YYYY-XXXXXX format (or legacy SP-XXXXXXXX)
+    pattern = r"^(NXT-\d{4}-[A-Z0-9]{6}|SP-[A-Z0-9]{8})$"
+    assert re.match(pattern, id1), f"ID '{id1}' does not match NEXTUP pattern NXT-YYYY-XXXXXX"
+    assert re.match(pattern, id2), f"ID '{id2}' does not match NEXTUP pattern NXT-YYYY-XXXXXX"
     assert id1 != id2, "Generated IDs must be unique and non-sequential"
 
 def test_consent_granting_and_revocation(client):

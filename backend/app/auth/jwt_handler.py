@@ -18,9 +18,9 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
         if hashed_password.startswith("$2b$") or hashed_password.startswith("$2a$"):
             password_bytes = plain_password.encode('utf-8')[:72]
             return bcrypt.checkpw(password_bytes, hashed_password.encode('utf-8'))
-        return plain_password == hashed_password
+        return False
     except Exception:
-        return plain_password == hashed_password
+        return False
 
 def get_password_hash(password: str) -> str:
     # Truncate to 72 bytes as required by standard bcrypt

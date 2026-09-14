@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from typing import Dict, Any, Optional
 from datetime import datetime
 
-logger = logging.getLogger("skillpulse.notifications")
+logger = logging.getLogger("nextup.notifications")
 
 class BaseNotificationProvider(ABC):
     """Abstract Interface for Longitudinal Communication Gateways (WhatsApp/SMS/Email/Portal)"""
@@ -31,8 +31,9 @@ class BaseNotificationProvider(ABC):
 
 class NotificationService(BaseNotificationProvider):
     """
-    Extensible notification service provider for SkillPulse.
+    Extensible notification service provider for NEXTUP.
     Supports portal notifications, console logging, and hooks for SMS/WhatsApp gateways.
+    NOTE: SMS/WhatsApp integration is PLANNED — currently using mock/portal delivery.
     """
 
     CHECKPOINT_TEMPLATES = {
@@ -89,8 +90,8 @@ class NotificationService(BaseNotificationProvider):
         job_title: str
     ) -> Dict[str, Any]:
         msg_body = (
-            f"SkillPulse Employer Verification: Trainee {trainee_name} has reported joining {employer_name} "
-            f"as {job_title}. Please review and verify this placement on the Employer Portal."
+            f"NEXTUP Employer Verification: Trainee {trainee_name} has reported joining {employer_name} "
+            f"as {job_title}. Please review and verify this placement on the NEXTUP Employer Portal."
         )
         logger.info("Employer Verification Notification sent to %s (%s): %s", employer_name, employer_email, msg_body)
         return {

@@ -4,7 +4,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { Activity, LogOut, ShieldCheck, UserPlus } from 'lucide-react';
 
 export const Navbar = () => {
-  const { user, isAuthenticated, logout, role, skillpulseId } = useAuth();
+  const { user, isAuthenticated, logout, role, nextupId } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -24,11 +24,9 @@ export const Navbar = () => {
           </div>
           <div>
             <span className="text-xl font-bold tracking-tight text-white flex items-center gap-1.5">
-              SkillPulse
-              <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 rounded font-semibold">
-                Outcome Platform
-              </span>
+              NEXTUP
             </span>
+            <div className="text-[9px] text-slate-500 -mt-0.5">AI-Powered Skilling Outcome Platform</div>
           </div>
         </Link>
 
@@ -36,10 +34,10 @@ export const Navbar = () => {
         <div className="flex items-center gap-3">
           {isAuthenticated ? (
             <div className="flex items-center gap-3">
-              {skillpulseId && (
+              {nextupId && (
                 <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-lg bg-emerald-950/50 border border-emerald-500/30 text-emerald-300 font-mono text-xs font-semibold">
                   <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>{skillpulseId}</span>
+                  <span>{nextupId}</span>
                 </div>
               )}
               <div className="text-right hidden sm:block">

@@ -9,6 +9,9 @@ from app.api.provider import router as provider_router
 from app.api.admin import router as admin_router
 from app.api.ai import router as ai_router
 from app.api.analytics import router as analytics_router
+from app.api.ml import router as ml_router
+from app.api.interventions import router as interventions_router
+from app.api.jobs import router as jobs_router
 
 api_router = APIRouter()
 
@@ -22,3 +25,6 @@ api_router.include_router(provider_router)
 api_router.include_router(admin_router)
 api_router.include_router(ai_router)
 api_router.include_router(analytics_router)
+api_router.include_router(ml_router)
+api_router.include_router(interventions_router)
+api_router.include_router(jobs_router)

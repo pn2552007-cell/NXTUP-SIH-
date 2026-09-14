@@ -29,7 +29,7 @@ export const AdminTopBar = ({ onRefresh, loading }) => {
     <header className="h-14 bg-slate-950/80 backdrop-blur border-b border-slate-800/60 flex items-center justify-between px-6 shrink-0">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm">
-        <span className="text-slate-500">SkillPulse Admin</span>
+        <span className="text-slate-500">NEXTUP Admin</span>
         <span className="text-slate-700">/</span>
         <span className="text-white font-semibold">{pageLabel}</span>
       </div>

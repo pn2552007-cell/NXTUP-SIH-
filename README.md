@@ -1,78 +1,93 @@
-# SkillPulse — AI-Powered Longitudinal Skilling Outcome Tracking Platform
+# NEXTUP — AI-Powered Longitudinal Skilling Outcome Platform
 
-> **"Track the journey from vocational skilling to sustained career impact."**
-
-SkillPulse is a production-grade, full-stack enterprise web application engineered to bridge the critical visibility gap in national and institutional skilling initiatives. It tracks trainees longitudinally through every stage of their career progression: institutional training, certifications, verified employer placements, 6-month and 12-month retention, and wage growth.
+> **Smart India Hackathon 2026 (SIH 2026)**  
+> **Problem ID:** SIH26135  
+> **Team:** Team Lumora  
+> **Mission:** *"Bridging India's Post-Skilling Data Gap Through Longitudinal Outcome Tracking & AI Early-Warning Interventions."*
 
 ---
 
-## 🌟 Core Platform Principles
+## 🎯 Executive Summary
 
-1. **Zero-Data Startup Guarantee**: Starts with zero synthetic records. Every dashboard metric, trendline, and aggregate chart derives directly from authenticated SQL database records.
-2. **Persistent SkillPulse ID (`SP-XXXXXXXX`)**: Generates cryptographically secure, non-sequential, 8-character identifiers (e.g., `SP-4K9W2B8Z`) that act as a public reference without exposing PII (phone/email).
-3. **Explicit Consent & DPDP Compliance**: Trainee consent is legally versioned, timestamped, purpose-bound, auditable, and revocable. Candidate discovery and longitudinal follow-ups are restricted to consenting individuals.
-4. **External Generative AI Skill-Gap Engine**: Powered by Groq LLaMA models (e.g., `llama-3.3-70b-versatile`) via `AIClient` and `AIService`. Uses structured prompts and Pydantic schema validation (`AIAnalysisOutput`). Gracefully handles unconfigured API keys without crashing or fabricating fake skills.
-5. **Dual-Stakeholder Verification Workflow**: Employment reported by trainees undergoes confirmation by employers with automated confidence scoring based on role, joining date, and compensation matching.
-6. **Dedicated Macro Analytics Engine**: Specialized `/api/analytics` endpoints compute macro employment rates, retention rates, wage growth distributions, and geographic disparity indices using SQL joins and aggregations.
-7. **Database Migrations via Alembic**: Full DDL schema management with migrations tracked and applied sequentially (`alembic upgrade head`).
+Across national skilling ecosystems (such as PMKVY, DGT, and State Skill Missions), tracking often terminates upon certification issuance. This creates a critical blindspot: **institutions lack verifiable data on whether graduates secure sustained employment, retain their jobs after 6–12 months, or achieve real wage progression.**
+
+**NEXTUP** solves this systemic challenge with an integrated, production-ready platform featuring:
+1. **Persistent Unified Trainee Identifier (`NXT-YYYY-XXXXXX`)** — A privacy-preserving national skilling ID that connects training, certification, employer verification, and career progression across a trainee's entire lifecycle.
+2. **Machine Learning Placement Risk Prediction** — A scikit-learn classification pipeline (RandomForest / GradientBoosting) that identifies at-risk trainees before course completion based on attendance, assessment scores, and skill gap telemetry.
+3. **Automated Remedial Intervention Engine** — Dynamically recommends targeted interventions (Mock Interviews, Bridge Courses, 1-on-1 Mentorship) with actionable sprint checklists.
+4. **Dual-Stakeholder Verification Workflow** — Tamper-resistant employment reporting where hiring employers cryptographically verify job titles, joining dates, and starting compensation.
+5. **DPDP Act & GDPR-Compliant Consent Framework** — Explicit, versioned, timestamped, purpose-bound, and revocable consent capture prior to longitudinal tracking.
+6. **Macro Policy Analytics Engine** — Real-time SQL aggregation for policymakers tracking 6-month retention rates, median wage growth (%), and geographic district heatmaps.
+
+---
+
+## ⚡ Implementation Status: Live vs Planned Roadmap
+
+To ensure academic and competition integrity, NEXTUP clearly delineates **live/implemented** capabilities from **future planned** roadmap integrations:
+
+| Capability / Module | Status | Technical Implementation Details |
+| :--- | :---: | :--- |
+| **Persistent NEXTUP ID (`NXT-YYYY-XXXXXX`)** | <mark>**LIVE**</mark> | Deterministic cryptographic generator with checksum and database uniqueness constraints. |
+| **ML Placement Risk Prediction Engine** | <mark>**LIVE**</mark> | Scikit-learn classification pipeline trained on structured skilling telemetry with explainable risk drivers. |
+| **Personalized Remedial Interventions** | <mark>**LIVE**</mark> | Rule-based & ML-assisted intervention generator with full lifecycle state management (`RECOMMENDED` → `IN_PROGRESS` → `COMPLETED`). |
+| **Dual-Party Employer Verification** | <mark>**LIVE**</mark> | Trainee self-report followed by employer payroll verification loop with confidence scoring. |
+| **Longitudinal 3/6/12-Month Retention Tracking** | <mark>**LIVE**</mark> | Automated check-in notification framework and wage trajectory computation (`((Current - Base) / Base) * 100`). |
+| **DPDP Act Explicit Consent Lifecycle** | <mark>**LIVE**</mark> | Auditable consent capture with client IP, timestamping, versioning, and instant revocation capability. |
+| **Macro Policy & District Analytics** | <mark>**LIVE**</mark> | PostgreSQL multi-table aggregation across batches, sectors, providers, and states. |
+| **DigiLocker / Aadhaar Vault Integration** | *PLANNED* | Direct India Stack API integration pending government sandbox credentials. |
+| **EPFO / ESIC Real-time Contribution Sync** | *PLANNED* | Statutory PF/ESI automated employment validation pipeline for institutional scale. |
 
 ---
 
 ## 🏛 System Architecture
 
 ```
-skillpulse/
+nextup/
 ├── backend/
-│   ├── alembic/                 # Alembic migration environment & revisions
-│   │   └── versions/            # Versioned schema migrations
+│   ├── alembic/                 # Database schema migrations
 │   ├── app/
-│   │   ├── ai/
-│   │   │   ├── ai_client.py     # Resilient Groq LLaMA AI client with HTTP fallback
-│   │   │   └── ai_service.py    # Structured prompt engineering & Pydantic validation
-│   │   ├── api/
-│   │   │   ├── auth.py          # JWT authentication, registration, & password hashing
+│   │   ├── ai/                  # AI service (LLM skill-gap detection with resilient fallback)
+│   │   ├── api/                 # REST API endpoints (/api)
+│   │   │   ├── auth.py          # JWT authentication & registration
 │   │   │   ├── consent.py       # DPDP consent lifecycle & audit trail
-│   │   │   ├── trainee.py       # Trainee profile, skills, & wage progression
-│   │   │   ├── provider.py      # Course creation, batch management, & CSV roster import
-│   │   │   ├── employer.py      # Verification requests & candidate talent discovery
-│   │   │   ├── employment.py    # Trainee employment reporting & wage initialization
-│   │   │   ├── followups.py     # 30d/90d/6m/12m milestone scheduling & response handling
-│   │   │   ├── analytics.py     # Dedicated SQL aggregation & macro analytics
-│   │   │   ├── ai.py            # AI skill-gap evaluation endpoints
-│   │   │   └── router.py        # Central API router (/api)
-│   │   ├── auth/
-│   │   │   └── jwt_handler.py   # JWT token generation, verification, & RBAC dependencies
-│   │   ├── models/
-│   │   │   └── models.py        # 17 SQLAlchemy relational models
-│   │   ├── schemas/
-│   │   │   └── schemas.py       # Pydantic v2 validation models
-│   │   ├── services/
-│   │   │   ├── notification_service.py  # Longitudinal communication abstraction
-│   │   │   └── csv_import_service.py    # CSV batch roster ingestion with ID generation
-│   │   ├── utils/
-│   │   │   ├── audit.py         # Persistent audit log persistence
-│   │   │   ├── id_generator.py  # Cryptographic SP-XXXXXXXX generator
-│   │   │   └── skill_normalizer.py # Canonical skill normalization & deduplication
-│   │   ├── config.py            # Pydantic BaseSettings (.env loader)
-│   │   ├── database.py          # SQLAlchemy engine & session factory
+│   │   │   ├── trainee.py       # Trainee profile, milestones, & wage progression
+│   │   │   ├── provider.py      # Batch management & CSV trainee ingestion
+│   │   │   ├── employer.py      # Verification queue & talent search
+│   │   │   ├── employment.py    # Trainee job reporting
+│   │   │   ├── followups.py     # 30d/90d/6m/12m milestone scheduler
+│   │   │   ├── ml.py            # ML placement risk prediction & intervention endpoints
+│   │   │   ├── jobs.py          # Industry target jobs catalogue & requirements
+│   │   │   ├── analytics.py     # Macro policy outcome aggregations
+│   │   │   └── router.py        # Central FastAPI router
+│   │   ├── ml/                  # Machine Learning pipeline
+│   │   │   ├── pipeline_train.py          # Training pipeline (RandomForest/LogisticRegression)
+│   │   │   ├── risk_service.py            # Real-time placement risk inference engine
+│   │   │   ├── recommendation_service.py  # Personalized intervention prescriptive service
+│   │   │   ├── retraining_service.py      # Automated retraining trigger on verified data
+│   │   │   └── data/                      # Model artifact (.joblib), metadata, synthetic dataset
+│   │   ├── models/              # SQLAlchemy relational models (User, Trainee, Job, Intervention, etc.)
+│   │   ├── schemas/             # Pydantic validation schemas
+│   │   ├── services/            # Background notification & CSV import services
+│   │   ├── utils/               # ID generator (`NXT-YYYY-XXXXXX`), skill normalizer, audit logger
+│   │   ├── config.py            # Environment configuration & SIH metadata
+│   │   ├── database.py          # Session factory & SQLite/PostgreSQL switcher
 │   │   └── main.py              # FastAPI application entrypoint
-│   ├── tests/                   # Automated pytest suite
-│   ├── alembic.ini              # Alembic configuration
+│   ├── tests/                   # 20+ automated pytest test suites
 │   ├── requirements.txt         # Backend Python dependencies
-│   └── Dockerfile               # Production container image
+│   └── Dockerfile               # Container build definition
 │
 ├── frontend/
 │   ├── src/
-│   │   ├── components/          # Reusable UI components & Recharts visualizations
-│   │   ├── contexts/            # React AuthContext & ToastContext
-│   │   ├── layouts/             # DashboardLayout & PublicLayout
-│   │   ├── pages/               # Trainee, Provider, Employer, Admin, Auth pages
+│   │   ├── components/          # PlacementRiskCard, TraineeJourneyTracker, SkillGapCard, Recharts
+│   │   ├── contexts/            # AuthContext (token/user/nextup_id management), ToastContext
+│   │   ├── layouts/             # DashboardLayout, AdminLayout, PublicLayout
+│   │   ├── pages/               # LandingPage, LoginPage, RegisterPage, ConsentPage, Dashboards
 │   │   └── services/            # Axios API client (/api)
 │   ├── package.json
 │   └── vite.config.js
 │
-├── docker-compose.yml           # Multi-container orchestration (DB, API, Frontend)
-├── .env.example                 # Environment configuration template
+├── docker-compose.yml           # Full-stack container orchestration
+├── .env.example                 # Environment variable template
 └── README.md                    # System documentation
 ```
 
@@ -80,136 +95,86 @@ skillpulse/
 
 ## 🛠 Technology Stack
 
-- **Backend**: Python 3.14 / FastAPI, SQLAlchemy 2.0, Pydantic v2, Alembic, Passlib (bcrypt), Python-Jose (JWT).
-- **AI Integration**: Groq API (`groq` SDK / LLaMA 3.3 70B Versatile), external HTTP fallback, Pydantic structured output validation.
-- **Frontend**: React 18, Vite, Tailwind CSS, Lucide Icons, Recharts, Axios.
-- **Database**: PostgreSQL (Production / Docker) or SQLite (Local Development).
-- **Testing**: Pytest, FastAPI TestClient (`httpx`).
-
----
-
-## ⚙️ Environment Variables
-
-Create a `.env` file in the project root based on `.env.example`:
-
-```env
-DATABASE_URL=postgresql://skillpulse:skillpulse@localhost:5432/skillpulse
-JWT_SECRET=your-secure-random-jwt-secret-key-at-least-32-chars
-AI_PROVIDER=groq
-GROQ_API_KEY=your-groq-api-key-here
-AI_API_KEY=your-groq-api-key-here
-AI_MODEL=llama-3.3-70b-versatile
-```
-
-*Note: If `GROQ_API_KEY` is not provided, the platform functions normally, and the AI service returns clear configuration notices without crashing.*
+- **Backend Framework:** FastAPI (Python 3.10+) with Pydantic v2 data validation
+- **Relational Database:** PostgreSQL (Production / Docker) with automatic fallback to SQLite (Local Dev)
+- **Machine Learning Stack:** Scikit-learn, NumPy, Pandas, Joblib
+- **Frontend Architecture:** React 18, Vite, Tailwind CSS, Recharts, Lucide Icons, Axios
+- **Authentication & Security:** JWT (JSON Web Tokens), OAuth2 password bearer, Passlib (bcrypt), DPDP audit trail
+- **Quality Assurance:** Pytest, FastAPI TestClient, 100% automated test pass rate
 
 ---
 
 ## 🚀 Quickstart Guide
 
-### Option 1: Docker Compose (Recommended)
+### 1. Prerequisites
+- Python 3.10+
+- Node.js 18+ and npm
+- (Optional) PostgreSQL 14+ or Docker
 
-Run the complete multi-container stack with PostgreSQL, FastAPI backend, and React frontend:
-
-```bash
-docker-compose up --build
-```
-
-- **Frontend Portal**: `http://localhost:5173`
-- **Backend API Docs**: `http://localhost:8000/docs`
-- **Database**: `localhost:5432`
-
-The backend container runs database migrations (`alembic upgrade head`) automatically on startup.
-
----
-
-### Option 2: Local Development
-
-#### 1. Backend Setup
-
+### 2. Backend Setup
 ```bash
 cd backend
-
-# Create & activate virtual environment (optional)
 python -m venv venv
-source venv/bin/activate   # On Windows: .\venv\Scripts\activate
+# On Windows:
+.\venv\Scripts\activate
+# On Linux/macOS:
+source venv/bin/activate
 
-# Install dependencies
 pip install -r requirements.txt
 
-# Run database migrations to current head
-alembic upgrade head
+# Run database seed (generates target jobs, courses, and demo users)
+python -m database.seed
 
-# Start FastAPI development server
+# Start the API server
 uvicorn app.main:app --reload --port 8000
 ```
+Backend API will be live at: `http://localhost:8000`  
+Interactive Swagger Documentation: `http://localhost:8000/docs`
 
-#### 2. Frontend Setup
-
+### 3. Frontend Setup
 ```bash
 cd frontend
-
-# Install dependencies
 npm install
-
-# Start Vite development server
 npm run dev
 ```
+Frontend Web Portal will be live at: `http://localhost:5173`
 
 ---
 
-## 🔒 Role-Based Portals
+## 🔑 SIH 2026 Evaluation Demo Credentials
 
-| Role | Portal URL | Core Features |
-|---|---|---|
-| **Trainee** | `/trainee/dashboard` | Consent management, SkillPulse ID, longitudinal journey tracking, AI skill gap analysis, employment reporting, wage growth tracking, follow-up responses. |
-| **Training Provider** | `/provider/dashboard` | Course creation, batch scheduling, trainee enrollment, CSV roster bulk ingestion, course-level placement metrics. |
-| **Employer** | `/employer/dashboard` | Pending employment verification requests, payroll confirmation, candidate talent discovery with consenting graduate filtering. |
-| **Admin / Government** | `/admin/dashboard` | National outcome overview, macro employment rate, 6-month retention rate, average wage growth, district-level breakdown, provider impact rankings. |
+The application includes 1-click quick-fill presets on the Login page for evaluating all four stakeholder personas:
+
+| Persona / Role | Email | Password | Primary Capabilities |
+| :--- | :--- | :--- | :--- |
+| **🎓 Trainee** | `trainee@nextup.demo` | `NextUp@Demo2026!` | Unified NEXTUP ID, AI Placement Risk Score, Personalized Remedial Interventions, Wage Progression Tracker. |
+| **🏫 Training Provider** | `provider@nextup.demo` | `NextUp@Demo2026!` | Batch outcome rosters, cohort risk analytics, course completion metrics, bulk CSV trainee ingestion. |
+| **💼 Employer** | `employer@nextup.demo` | `NextUp@Demo2026!` | Verification queue for reported hires, salary/designation validation, consenting graduate candidate talent pool. |
+| **🏛️ Govt / Admin** | `admin@nextup.demo` | `NextUp@Demo2026!` | Macro outcome metrics (6-month retention %, wage growth %), ML model monitoring, district & sector impact rankings. |
 
 ---
 
-## 🧪 Automated Testing Suite
+## 🧪 Automated Testing
 
-The application includes a comprehensive test suite in `backend/tests/` covering the full lifecycle:
+NEXTUP includes an exhaustive automated test suite covering all authentication flows, ID generation formats, DPDP consent lifecycle, ML risk inference, and target jobs:
 
 ```bash
 cd backend
-pytest tests/ -v
+python -m pytest tests/ -v
 ```
 
-### Test Coverage Highlights:
-- **Authentication & RBAC**: Tests registration across all roles, password hashing, JWT creation, and rejection of unauthorized cross-role endpoints.
-- **SkillPulse ID & Consent**: Verifies non-sequential `SP-XXXXXXXX` format, cryptographic uniqueness, consent granting with purpose, revocation, and immutable audit logs.
-- **Skills Normalization & Courses**: Tests canonical casing (e.g. `python` → `Python`), duplicate prevention, course creation, batch creation, and trainee enrollment.
-- **Employment & Employer Verification**: Tests trainee self-reporting, calculation of confidence score based on verification criteria, and wage history updates.
-- **Longitudinal Follow-Ups**: Tests 30-day, 90-day, 6-month, and 12-month schedule generation and response recording.
-- **Zero-Data & Populated Analytics**: Validates all 8 `/analytics` endpoints with zero initial records (ensuring clean responses without exceptions) and verifies SQL aggregations when data is populated.
-- **AI Service Resilience**: Tests safe error handling and output structure when `AI_API_KEY` is not configured.
+**Test Coverage Summary:**
+- `test_nextup_features.py`: Validates `NXT-YYYY-XXXXXX` persistent ID format, `/api/ml/predict-risk`, `/api/ml/model-info`, `/api/ml/recommend-intervention`, and `/api/jobs`.
+- `test_trainee_and_consent.py`: Tests trainee registration, persistent ID assignment, DPDP consent grant & revocation.
+- `test_auth_and_rbac.py`: Role-based access control across Trainee, Provider, Employer, and Admin scopes.
+- `test_employment_and_verification.py`: Employment reporting, employer verification lifecycle, and confidence score calculation.
+- `test_analytics.py`: Dedicated macro analytics aggregation queries.
+- `test_followups.py`: Longitudinal 30d/90d/6m/12m milestone scheduler.
+- `test_provider_and_skills.py`: Skill normalizer and course batch creation.
 
 ---
 
-## ☁️ Cloudflare Pages / Workers Deployment
-
-SkillPulse is fully pre-configured for deployment to **Cloudflare Pages**:
-
-### Build Settings in Cloudflare Pages Dashboard
-| Setting | Recommended Value |
-|---|---|
-| **Framework preset** | `Vite` |
-| **Root directory** | `frontend` |
-| **Build command** | `npm run build` |
-| **Build output directory** | `dist` |
-| **Node.js Version** | `20` (set `NODE_VERSION=20` under environment variables) |
-
-### Cloudflare Environment Variables
-Configure under **Project Settings → Environment Variables**:
-- `VITE_API_BASE_URL`: (Optional) URL of your hosted backend (e.g. `https://api.skillpulse.example.com`).
-- `BACKEND_URL`: (Optional) For the built-in Cloudflare Pages Function `/api/*` reverse proxy (`frontend/functions/api/[[path]].js`).
-- `VITE_BASE_PATH`: (Optional) Default `/`.
-
----
-
-## 📄 License
-
-SkillPulse is released under the MIT License.
+## 👥 Team Lumora (SIH 2026)
+- **Problem ID:** SIH26135
+- **Category:** Software / National Skilling & Workforce Development
+- **Project:** NEXTUP Longitudinal Skilling Outcome Platform

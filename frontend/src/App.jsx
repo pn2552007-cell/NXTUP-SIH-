@@ -15,6 +15,7 @@ import { TraineeDashboard } from './pages/TraineeDashboard';
 import { ProviderDashboard } from './pages/ProviderDashboard';
 import { EmployerDashboard } from './pages/EmployerDashboard';
 import { AdminDashboard } from './pages/AdminDashboard';
+import { AdminSectionView } from './pages/admin/AdminSectionView';
 import { NotFoundPage } from './pages/NotFoundPage';
 
 // Protected Route Component
@@ -24,7 +25,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-950 text-slate-400 text-xs">
-        Authenticating SkillPulse Session...
+        Authenticating NEXTUP Session...
       </div>
     );
   }
@@ -33,10 +34,14 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
     return <Navigate to="/login" replace />;
   }
 
-  if (allowedRoles && !allowedRoles.includes(role) && role !== 'ADMIN') {
+  const effectiveRoles = allowedRoles
+    ? allowedRoles.flatMap((r) => (r === 'PROVIDER' ? ['PROVIDER', 'TRAINING_PROVIDER'] : [r]))
+    : null;
+
+  if (effectiveRoles && !effectiveRoles.includes(role) && role !== 'ADMIN') {
     // If not authorized for this role, redirect to their role dashboard
     if (role === 'TRAINEE') return <Navigate to="/trainee/dashboard" replace />;
-    if (role === 'PROVIDER') return <Navigate to="/provider/dashboard" replace />;
+    if (role === 'PROVIDER' || role === 'TRAINING_PROVIDER') return <Navigate to="/provider/dashboard" replace />;
     if (role === 'EMPLOYER') return <Navigate to="/employer/dashboard" replace />;
     if (role === 'ADMIN') return <Navigate to="/admin/dashboard" replace />;
     return <Navigate to="/" replace />;
@@ -72,7 +77,7 @@ export function App() {
               <Route
                 path="/provider/dashboard"
                 element={
-                  <ProtectedRoute allowedRoles={['PROVIDER', 'ADMIN']}>
+                  <ProtectedRoute allowedRoles={['PROVIDER', 'TRAINING_PROVIDER', 'ADMIN']}>
                     <ProviderDashboard />
                   </ProtectedRoute>
                 }
@@ -97,7 +102,30 @@ export function App() {
                   </ProtectedRoute>
                 }
               />
-              {/* Additional admin pages can be added here */}
+              {[
+                '/admin/trainees',
+                '/admin/users',
+                '/admin/training',
+                '/admin/certificates',
+                '/admin/employment',
+                '/admin/employer-verification',
+                '/admin/followups',
+                '/admin/skill-gaps',
+                '/admin/policy-insights',
+                '/admin/reports',
+                '/admin/audit-logs',
+                '/admin/settings',
+              ].map((adminPath) => (
+                <Route
+                  key={adminPath}
+                  path={adminPath}
+                  element={
+                    <ProtectedRoute allowedRoles={['ADMIN']}>
+                      <AdminSectionView />
+                    </ProtectedRoute>
+                  }
+                />
+              ))}
             </Route>
 
             {/* 404 Route */}

@@ -10,7 +10,7 @@ export const NotFoundPage = () => {
       </div>
       <h1 className="text-4xl font-extrabold text-white">404 - Page Not Found</h1>
       <p className="text-sm text-slate-400 max-w-md">
-        The requested SkillPulse portal route does not exist or has been moved.
+        The requested NEXTUP portal route does not exist or has been moved.
       </p>
       <Link
         to="/"

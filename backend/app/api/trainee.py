@@ -37,6 +37,7 @@ def get_trainee_profile(current_user: User = Depends(get_current_user), db: Sess
     cert = db.query(Certification).filter(Certification.trainee_id == trainee.id).first()
     emp_record = db.query(EmploymentRecord).filter(EmploymentRecord.trainee_id == trainee.id).order_by(EmploymentRecord.created_at.desc()).first()
     gap_record = db.query(SkillGapAnalysis).filter(SkillGapAnalysis.trainee_id == trainee.id).order_by(SkillGapAnalysis.created_at.desc()).first()
+    nid = trainee.nextup_id or trainee.skillpulse_id
 
     starting_sal = emp_record.starting_salary if emp_record and emp_record.starting_salary else None
     current_sal = emp_record.current_salary if emp_record and emp_record.current_salary else starting_sal
@@ -60,6 +61,7 @@ def get_trainee_profile(current_user: User = Depends(get_current_user), db: Sess
 
     return {
         "id": trainee.id,
+        "nextup_id": nid,
         "skillpulse_id": trainee.skillpulse_id,
         "full_name": trainee.full_name,
         "email": trainee.email,
@@ -88,7 +90,20 @@ def get_trainee_profile(current_user: User = Depends(get_current_user), db: Sess
         "retention_12m": retention_12m,
         "skill_gap_score": gap_record.skill_gap_score if gap_record else None,
         "confidence_score": emp_record.confidence_score if emp_record else None,
-        "verification_status": emp_record.verification_status if emp_record else None
+        "verification_status": emp_record.verification_status if emp_record else None,
+        "verification_label": (
+            "Employer verified" if emp_record and emp_record.verification_status == "VERIFIED"
+            else "Correction requested — please update your report" if emp_record and emp_record.verification_status == "CORRECTION_REQUESTED"
+            else "Rejected by employer" if emp_record and emp_record.verification_status == "REJECTED"
+            else "Self-reported — awaiting employer verification" if emp_record
+            else None
+        ),
+        "data_trust_note": (
+            "Employer verification confirms this outcome; it does not replace employer HR or payroll records."
+            if emp_record and emp_record.verification_status == "VERIFIED"
+            else "Self-reported outcomes are shown separately from employer-verified outcomes."
+            if emp_record else None
+        )
     }
 
 @router.get("/journey")

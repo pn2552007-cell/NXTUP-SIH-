@@ -61,7 +61,7 @@ export const CsvImportModal = ({ isOpen, onClose, onSuccess }) => {
           </div>
           <a
             href={providerAPI.downloadSampleCsvUrl}
-            download="skillpulse_trainee_import_template.csv"
+            download="nextup_trainee_import_template.csv"
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 font-semibold hover:bg-emerald-500/20 transition-colors"
           >
             <Download className="w-3.5 h-3.5" />

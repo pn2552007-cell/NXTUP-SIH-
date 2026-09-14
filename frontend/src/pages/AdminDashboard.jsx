@@ -3,7 +3,6 @@ import { adminAPI } from '../services/api';
 import { MetricCard } from '../components/common/MetricCard';
 import { Badge } from '../components/common/Badge';
 import {
-  Landmark,
   TrendingUp,
   Briefcase,
   Users,
@@ -14,12 +13,12 @@ import {
   Info,
   RefreshCw,
   BarChart3,
-  AlertCircle
+  AlertCircle,
+  BookOpen,
+  CalendarDays
 } from 'lucide-react';
 import {
   ResponsiveContainer,
-  AreaChart,
-  Area,
   BarChart,
   Bar,
   XAxis,
@@ -33,17 +32,28 @@ export const AdminDashboard = () => {
   const [filterOptions, setFilterOptions] = useState(null);
   const [selectedState, setSelectedState] = useState('ALL');
   const [selectedDistrict, setSelectedDistrict] = useState('ALL');
+  const [selectedProvider, setSelectedProvider] = useState('ALL');
+  const [selectedCourse, setSelectedCourse] = useState('ALL');
+  const [selectedCohort, setSelectedCohort] = useState('ALL');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [loading, setLoading] = useState(true);
 
   const fetchDashboard = async () => {
     try {
       setLoading(true);
+      const params = {
+        state: selectedState !== 'ALL' ? selectedState : undefined,
+        district: selectedDistrict !== 'ALL' ? selectedDistrict : undefined,
+        provider_id: selectedProvider !== 'ALL' ? Number(selectedProvider) : undefined,
+        course_id: selectedCourse !== 'ALL' ? Number(selectedCourse) : undefined,
+        cohort: selectedCohort !== 'ALL' ? selectedCohort : undefined,
+        start_date: startDate || undefined,
+        end_date: endDate || undefined,
+      };
       const [dashRes, filtersRes] = await Promise.all([
-        adminAPI.getDashboard({
-          state: selectedState !== 'ALL' ? selectedState : undefined,
-          district: selectedDistrict !== 'ALL' ? selectedDistrict : undefined,
-        }),
-        adminAPI.getFilters(),
+        adminAPI.getDashboard(params),
+        adminAPI.getFilters(params),
       ]);
       setData(dashRes.data);
       setFilterOptions(filtersRes.data);
@@ -56,7 +66,7 @@ export const AdminDashboard = () => {
 
   useEffect(() => {
     fetchDashboard();
-  }, [selectedState, selectedDistrict]);
+  }, [selectedState, selectedDistrict, selectedProvider, selectedCourse, selectedCohort, startDate, endDate]);
 
   const isEmptyDatabase = !data || (data.total_trainees === 0 && data.total_courses === 0);
 
@@ -84,6 +94,9 @@ export const AdminDashboard = () => {
               onChange={(e) => {
                 setSelectedState(e.target.value);
                 setSelectedDistrict('ALL');
+                setSelectedProvider('ALL');
+                setSelectedCourse('ALL');
+                setSelectedCohort('ALL');
               }}
               className="bg-transparent text-slate-200 focus:outline-none cursor-pointer"
             >
@@ -107,6 +120,78 @@ export const AdminDashboard = () => {
                 </option>
               ))}
             </select>
+          </div>
+
+          <div className="flex items-center gap-1.5 bg-slate-900 border border-slate-700 px-3 py-1.5 rounded-xl text-xs">
+            <Building2 className="w-3.5 h-3.5 text-slate-400" />
+            <select
+              value={selectedProvider}
+              onChange={(e) => {
+                setSelectedProvider(e.target.value);
+                setSelectedCourse('ALL');
+                setSelectedCohort('ALL');
+              }}
+              className="bg-transparent text-slate-200 focus:outline-none cursor-pointer max-w-40"
+            >
+              <option value="ALL" className="bg-slate-900 text-slate-100">All Providers</option>
+              {(filterOptions?.providers || []).map((provider) => (
+                <option key={provider.id} value={provider.id} className="bg-slate-900 text-slate-100">
+                  {provider.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex items-center gap-1.5 bg-slate-900 border border-slate-700 px-3 py-1.5 rounded-xl text-xs">
+            <BookOpen className="w-3.5 h-3.5 text-slate-400" />
+            <select
+              value={selectedCourse}
+              onChange={(e) => {
+                setSelectedCourse(e.target.value);
+                setSelectedCohort('ALL');
+              }}
+              className="bg-transparent text-slate-200 focus:outline-none cursor-pointer max-w-40"
+            >
+              <option value="ALL" className="bg-slate-900 text-slate-100">All Courses</option>
+              {(filterOptions?.courses || []).map((course) => (
+                <option key={course.id} value={course.id} className="bg-slate-900 text-slate-100">
+                  {course.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex items-center gap-1.5 bg-slate-900 border border-slate-700 px-3 py-1.5 rounded-xl text-xs">
+            <select
+              value={selectedCohort}
+              onChange={(e) => setSelectedCohort(e.target.value)}
+              className="bg-transparent text-slate-200 focus:outline-none cursor-pointer max-w-36"
+            >
+              {(filterOptions?.cohorts || ['ALL']).map((cohort) => (
+                <option key={cohort} value={cohort} className="bg-slate-900 text-slate-100">
+                  {cohort === 'ALL' ? 'All Cohorts' : cohort}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex items-center gap-1.5 bg-slate-900 border border-slate-700 px-3 py-1.5 rounded-xl text-xs">
+            <CalendarDays className="w-3.5 h-3.5 text-slate-400" />
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              title="Training end date from"
+              className="bg-transparent text-slate-200 focus:outline-none"
+            />
+            <span className="text-slate-500">to</span>
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              title="Training end date to"
+              className="bg-transparent text-slate-200 focus:outline-none"
+            />
           </div>
 
           <button
@@ -137,7 +222,7 @@ export const AdminDashboard = () => {
         <MetricCard
           title="Macro Employment Rate"
           value={data ? `${data.macro_employment_rate}%` : '0%'}
-          subtitle="Trained to Employed"
+          subtitle={`${data?.verified_employment || 0} verified, ${data?.self_reported_employment || 0} self-reported`}
           icon={Briefcase}
           accentColor="emerald"
         />
@@ -145,7 +230,7 @@ export const AdminDashboard = () => {
         <MetricCard
           title="6-Month Retention"
           value={data?.macro_retention_6m !== null && data?.macro_retention_6m !== undefined ? `${data.macro_retention_6m}%` : 'Insufficient data'}
-          subtitle="Sustained in Industry"
+          subtitle={`${data?.retention?.['6_MONTHS']?.responses || 0} follow-up responses`}
           icon={Building2}
           accentColor="cyan"
         />
@@ -169,7 +254,7 @@ export const AdminDashboard = () => {
         <MetricCard
           title="Macro Skill Gap Index"
           value={data?.macro_skill_gap_index !== null && data?.macro_skill_gap_index !== undefined ? `${data.macro_skill_gap_index}%` : 'N/A'}
-          subtitle="Curriculum Alignment"
+          subtitle="Live skill-gap assessments"
           icon={Cpu}
           accentColor="amber"
         />
@@ -181,6 +266,21 @@ export const AdminDashboard = () => {
           icon={Users}
           accentColor="cyan"
         />
+      </div>
+
+      <div className="glass-panel rounded-2xl p-4 border-slate-800 grid grid-cols-1 lg:grid-cols-3 gap-3 text-xs">
+        <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800">
+          <div className="font-bold text-white">Data trust split</div>
+          <p className="text-slate-400 mt-1">{data?.data_trust?.employment_basis || 'Self-reported and verified outcomes are tracked separately.'}</p>
+        </div>
+        <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800">
+          <div className="font-bold text-white">Retention basis</div>
+          <p className="text-slate-400 mt-1">{data?.data_trust?.retention_basis || 'Retention appears after follow-up responses.'}</p>
+        </div>
+        <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800">
+          <div className="font-bold text-white">AI status</div>
+          <p className="text-slate-400 mt-1">{data?.ai_status?.placement_risk_model?.disclaimer || 'Placement-risk model is planned until real verified pilot outcomes exist.'}</p>
+        </div>
       </div>
 
       {/* Sectoral Breakdown and Charts */}
@@ -247,6 +347,7 @@ export const AdminDashboard = () => {
                   <th className="px-3 py-2.5">State</th>
                   <th className="px-3 py-2.5 text-center">Trainees</th>
                   <th className="px-3 py-2.5 text-center">Employment</th>
+                  <th className="px-3 py-2.5 text-center">Verified</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60 text-slate-200">
@@ -257,11 +358,12 @@ export const AdminDashboard = () => {
                       <td className="px-3 py-2.5 text-slate-400">{dist.state}</td>
                       <td className="px-3 py-2.5 text-center font-mono">{dist.total_trainees}</td>
                       <td className="px-3 py-2.5 text-center font-bold text-emerald-400">{dist.employment_rate}%</td>
+                      <td className="px-3 py-2.5 text-center font-mono text-cyan-300">{dist.verified_count || 0}</td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={4} className="px-4 py-8 text-center text-slate-400">
+                    <td colSpan={5} className="px-4 py-8 text-center text-slate-400">
                       No district records available yet.
                     </td>
                   </tr>
@@ -292,6 +394,7 @@ export const AdminDashboard = () => {
                   <th className="px-3 py-2.5">Provider</th>
                   <th className="px-3 py-2.5 text-center">Trained</th>
                   <th className="px-3 py-2.5 text-center">Placement</th>
+                  <th className="px-3 py-2.5 text-center">Verified</th>
                   <th className="px-3 py-2.5 text-right">Impact Score</th>
                 </tr>
               </thead>
@@ -305,6 +408,7 @@ export const AdminDashboard = () => {
                       </td>
                       <td className="px-3 py-2.5 text-center font-mono">{prv.total_trained}</td>
                       <td className="px-3 py-2.5 text-center font-bold text-emerald-400">{prv.employed_pct}%</td>
+                      <td className="px-3 py-2.5 text-center font-mono text-cyan-300">{prv.verified_count || 0}</td>
                       <td className="px-3 py-2.5 text-right">
                         <span className="px-2 py-0.5 rounded bg-purple-500/15 text-purple-300 font-mono font-bold border border-purple-500/30">
                           {prv.impact_score}/100

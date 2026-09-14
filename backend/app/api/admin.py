@@ -1,6 +1,6 @@
 """
-SkillPulse Admin Panel API
---------------------------
+NEXTUP Admin Panel API
+----------------------
 All endpoints require ADMIN role JWT authentication.
 All metrics are computed from live PostgreSQL data.
 No fake/hardcoded statistics.
@@ -40,172 +40,52 @@ admin_required = require_role(["ADMIN"])
 
 @router.get("/dashboard")
 def admin_dashboard(
-    state: Optional[str] = None,
-    district: Optional[str] = None,
-    current_user: User = Depends(admin_required),
-    db: Session = Depends(get_db)
+    state: Optional[str] = None, district: Optional[str] = None,
+    provider_id: Optional[int] = None, course_id: Optional[int] = None,
+    cohort: Optional[str] = None, start_date: Optional[date] = None,
+    end_date: Optional[date] = None,
+    current_user: User = Depends(admin_required), db: Session = Depends(get_db)
 ):
-    """
-    Real-time dashboard metrics from PostgreSQL.
-    All values computed live — zero fake numbers.
-    """
-    # ── User counts ──
-    total_users = db.query(func.count(User.id)).scalar() or 0
-
-    # ── Trainee counts (with optional geo filter) ──
-    t_q = db.query(Trainee)
-    if state and state != "ALL":
-        t_q = t_q.filter(Trainee.state == state)
-    if district and district != "ALL":
-        t_q = t_q.filter(Trainee.district == district)
-    total_trainees = t_q.count()
-
-    trainee_ids = [t.id for t in t_q.with_entities(Trainee.id).all()]
-
-    # ── Employment stats ──
-    emp_q = db.query(EmploymentRecord)
-    if trainee_ids:
-        emp_q = emp_q.filter(EmploymentRecord.trainee_id.in_(trainee_ids))
-
-    emp_status_rows = emp_q.with_entities(
-        EmploymentRecord.status, func.count(EmploymentRecord.id)
-    ).group_by(EmploymentRecord.status).all()
-
-    emp_status_map = {s: c for s, c in emp_status_rows}
-    employed_count = emp_status_map.get("EMPLOYED", 0)
-    unemployed_count = emp_status_map.get("NOT_SEEKING", 0)
-    seeking_count = emp_status_map.get("SEEKING", 0)
-    self_employed_count = emp_status_map.get("SELF_EMPLOYED", 0)
-
-    # Trainees who never reported employment
-    trainees_with_emp = db.query(func.count(func.distinct(EmploymentRecord.trainee_id)))
-    if trainee_ids:
-        trainees_with_emp = trainees_with_emp.filter(EmploymentRecord.trainee_id.in_(trainee_ids))
-    trainees_with_emp = trainees_with_emp.scalar() or 0
-    no_status_count = max(total_trainees - trainees_with_emp, 0)
-
-    # ── Training completion ──
-    tr_q = db.query(TrainingRecord)
-    if trainee_ids:
-        tr_q = tr_q.filter(TrainingRecord.trainee_id.in_(trainee_ids))
-    training_completed = tr_q.filter(TrainingRecord.completion_status == "COMPLETED").count()
-
-    # ── Certificate stats ──
-    cert_q = db.query(Certification)
-    if trainee_ids:
-        cert_q = cert_q.filter(Certification.trainee_id.in_(trainee_ids))
-    certs_uploaded = cert_q.count()
-
-    # Certifications use status ISSUED/REVOKED/EXPIRED — pending means not yet issued
-    # We track cert verification via EmploymentRecord verification_status
-    certs_verified = db.query(func.count(EmploymentRecord.id)).filter(
-        EmploymentRecord.verification_status == "VERIFIED"
-    )
-    if trainee_ids:
-        certs_verified = certs_verified.filter(EmploymentRecord.trainee_id.in_(trainee_ids))
-    certs_verified = certs_verified.scalar() or 0
-
-    certs_pending_verification = db.query(func.count(EmploymentRecord.id)).filter(
-        EmploymentRecord.verification_status == "PENDING"
-    )
-    if trainee_ids:
-        certs_pending_verification = certs_pending_verification.filter(
-            EmploymentRecord.trainee_id.in_(trainee_ids)
-        )
-    certs_pending_verification = certs_pending_verification.scalar() or 0
-
-    # ── Employer verifications ──
-    verified_employment = db.query(func.count(EmployerVerification.id)).filter(
-        EmployerVerification.status == "VERIFIED"
-    ).scalar() or 0
-
-    # ── Pending follow-ups ──
-    pending_followups = db.query(func.count(Followup.id)).filter(
-        Followup.status.in_(["SCHEDULED", "SENT"])
-    )
-    if trainee_ids:
-        pending_followups = pending_followups.filter(Followup.trainee_id.in_(trainee_ids))
-    pending_followups = pending_followups.scalar() or 0
-
-    # Overdue follow-ups
-    today_str = date.today().isoformat()
-    overdue_followups = db.query(func.count(Followup.id)).filter(
-        Followup.status.in_(["SCHEDULED", "SENT"]),
-        Followup.scheduled_date <= today_str
-    )
-    if trainee_ids:
-        overdue_followups = overdue_followups.filter(Followup.trainee_id.in_(trainee_ids))
-    overdue_followups = overdue_followups.scalar() or 0
-
-    # ── Platform counts ──
-    total_providers = db.query(func.count(Provider.id)).scalar() or 0
-    total_courses = db.query(func.count(Course.id)).scalar() or 0
-    total_employers = db.query(func.count(Employer.id)).scalar() or 0
-
-    # ── Employment rate ──
-    emp_rate = round((employed_count / max(total_trainees, 1)) * 100.0, 1) if total_trainees > 0 else 0.0
-
-    # ── Certificate issuance rate ──
-    cert_rate = round((certs_uploaded / max(total_trainees, 1)) * 100.0, 1) if total_trainees > 0 else 0.0
-
-    # ── Avg wage growth ──
-    avg_growth = db.query(func.avg(WageHistory.growth_pct_since_starting)).filter(
-        WageHistory.growth_pct_since_starting > 0
-    ).scalar()
-    avg_wage_growth = round(float(avg_growth), 1) if avg_growth else None
-
-    # ── Employment by course (top 5) ──
-    course_stats = []
-    courses = db.query(Course).limit(10).all()
-    for c in courses:
-        c_t_ids = [r.trainee_id for r in db.query(TrainingRecord.trainee_id)
-                   .filter(TrainingRecord.course_id == c.id).all()]
-        enrolled = len(c_t_ids)
-        employed_c = db.query(func.count(EmploymentRecord.id)).filter(
-            EmploymentRecord.trainee_id.in_(c_t_ids),
-            EmploymentRecord.status == "EMPLOYED"
-        ).scalar() if c_t_ids else 0
-        course_stats.append({
-            "course": c.course_name,
-            "domain": c.domain,
-            "enrolled": enrolled,
-            "employed": employed_c,
-            "rate": round((employed_c / max(enrolled, 1)) * 100.0, 1) if enrolled > 0 else 0.0
-        })
-
-    return {
-        "total_users": total_users,
-        "total_trainees": total_trainees,
-        "total_providers": total_providers,
-        "total_courses": total_courses,
-        "total_employers": total_employers,
-        "employed_trainees": employed_count,
-        "unemployed_trainees": unemployed_count + no_status_count,
-        "seeking_employment": seeking_count,
-        "self_employed": self_employed_count,
-        "training_completed": training_completed,
-        "certificates_uploaded": certs_uploaded,
-        "certificates_pending_verification": certs_pending_verification,
-        "verified_employment": verified_employment,
-        "pending_followups": pending_followups,
-        "overdue_followups": overdue_followups,
-        "employment_rate_pct": emp_rate,
-        "certificate_issuance_rate_pct": cert_rate,
-        "avg_wage_growth_pct": avg_wage_growth,
-        "course_employment_stats": course_stats[:5],
-        "active_filters": {"state": state or "ALL", "district": district or "ALL"}
-    }
+    from app.services.outcome_metrics import dashboard_metrics
+    if start_date and end_date and start_date > end_date:
+        raise HTTPException(400, "Start date must not follow end date.")
+    return dashboard_metrics(db, state, district, provider_id, course_id, cohort, start_date, end_date)
 
 
 @router.get("/filters")
 def get_available_filters(
+    state: Optional[str] = None,
+    district: Optional[str] = None,
+    provider_id: Optional[int] = None,
+    course_id: Optional[int] = None,
     current_user: User = Depends(admin_required),
     db: Session = Depends(get_db)
 ):
+    trainee_q = db.query(Trainee)
+    if state and state != "ALL":
+        trainee_q = trainee_q.filter(Trainee.state == state)
+    if district and district != "ALL":
+        trainee_q = trainee_q.filter(Trainee.district == district)
+
     states = [s[0] for s in db.query(Trainee.state).distinct().filter(Trainee.state.isnot(None)).all()]
-    districts = [d[0] for d in db.query(Trainee.district).distinct().filter(Trainee.district.isnot(None)).all()]
-    providers = [{"id": p.id, "name": p.organization_name} for p in db.query(Provider).all()]
-    courses = [{"id": c.id, "name": c.course_name, "domain": c.domain} for c in db.query(Course).all()]
+    districts = [d[0] for d in trainee_q.with_entities(Trainee.district).distinct().filter(Trainee.district.isnot(None)).all()]
+
+    provider_q = db.query(Provider)
+    if state and state != "ALL":
+        provider_q = provider_q.filter(Provider.state == state)
+    providers = [{"id": p.id, "name": p.organization_name} for p in provider_q.order_by(Provider.organization_name).all()]
+
+    course_q = db.query(Course)
+    if provider_id:
+        course_q = course_q.filter(Course.provider_id == provider_id)
+    courses = [{"id": c.id, "name": c.course_name, "domain": c.domain} for c in course_q.order_by(Course.course_name).all()]
+
+    cohort_q = db.query(TrainingRecord.cohort_id).distinct().filter(TrainingRecord.cohort_id.isnot(None))
+    if provider_id:
+        cohort_q = cohort_q.filter(TrainingRecord.provider_id == provider_id)
+    if course_id:
+        cohort_q = cohort_q.filter(TrainingRecord.course_id == course_id)
+    cohorts = [c[0] for c in cohort_q.all()]
     employers = [{"id": e.id, "name": e.company_name} for e in db.query(Employer).all()]
 
     return {
@@ -213,6 +93,7 @@ def get_available_filters(
         "districts": ["ALL"] + sorted(districts),
         "providers": providers,
         "courses": courses,
+        "cohorts": ["ALL"] + sorted(cohorts),
         "employers": employers
     }
 
@@ -244,6 +125,7 @@ def list_trainees(
         q = q.filter(or_(
             Trainee.full_name.ilike(like),
             Trainee.email.ilike(like),
+            Trainee.nextup_id.ilike(like),
             Trainee.skillpulse_id.ilike(like),
             Trainee.phone.ilike(like)
         ))
@@ -281,7 +163,8 @@ def list_trainees(
 
         rows.append({
             "id": t.id,
-            "skillpulse_id": t.skillpulse_id,
+            "nextup_id": t.nextup_id or t.skillpulse_id,
+            "skillpulse_id": t.nextup_id or t.skillpulse_id,
             "full_name": t.full_name,
             "email": t.email,
             "phone": t.phone,
@@ -511,8 +394,10 @@ def list_users(
         ).order_by(desc(AuditLog.created_at)).first()
 
         skillpulse_id = None
+        nextup_id = None
         if u.trainee_profile:
-            skillpulse_id = u.trainee_profile.skillpulse_id
+            nextup_id = u.trainee_profile.nextup_id or u.trainee_profile.skillpulse_id
+            skillpulse_id = nextup_id
 
         rows.append({
             "id": u.id,
@@ -523,6 +408,7 @@ def list_users(
             "is_active": u.is_active,
             "created_at": u.created_at.isoformat() if u.created_at else None,
             "last_login": last_login[0].isoformat() if last_login else None,
+            "nextup_id": nextup_id,
             "skillpulse_id": skillpulse_id,
         })
 
@@ -1102,6 +988,13 @@ def admin_skill_gap_analytics(
 
 @router.get("/policy-insights")
 def admin_policy_insights(
+    state: Optional[str] = None,
+    district: Optional[str] = None,
+    provider_id: Optional[int] = None,
+    course_id: Optional[int] = None,
+    cohort: Optional[str] = None,
+    start_date: Optional[date] = None,
+    end_date: Optional[date] = None,
     current_user: User = Depends(admin_required),
     db: Session = Depends(get_db)
 ):
@@ -1110,213 +1003,90 @@ def admin_policy_insights(
     Every insight shows the evidence behind it.
     No fabricated recommendations.
     """
-    total_trainees = db.query(func.count(Trainee.id)).scalar() or 0
-    total_employed = db.query(func.count(EmploymentRecord.id)).filter(
-        EmploymentRecord.status == "EMPLOYED"
-    ).scalar() or 0
-    total_certified = db.query(func.count(Certification.id)).scalar() or 0
-    total_training_records = db.query(func.count(TrainingRecord.id)).scalar() or 0
-    training_completed = db.query(func.count(TrainingRecord.id)).filter(
-        TrainingRecord.completion_status == "COMPLETED"
-    ).scalar() or 0
-    verified_employment = db.query(func.count(EmploymentRecord.id)).filter(
-        EmploymentRecord.verification_status == "VERIFIED"
-    ).scalar() or 0
+    from app.services.outcome_metrics import dashboard_metrics
+    if start_date and end_date and start_date > end_date:
+        raise HTTPException(400, "Start date must not follow end date.")
 
-    employment_rate = round((total_employed / max(total_trainees, 1)) * 100.0, 1) if total_trainees > 0 else 0.0
-    completion_rate = round((training_completed / max(total_training_records, 1)) * 100.0, 1) if total_training_records > 0 else 0.0
-    cert_rate = round((total_certified / max(total_trainees, 1)) * 100.0, 1) if total_trainees > 0 else 0.0
-    verification_rate = round((verified_employment / max(total_employed, 1)) * 100.0, 1) if total_employed > 0 else 0.0
+    metrics = dashboard_metrics(db, state, district, provider_id, course_id, cohort, start_date, end_date)
+    total_trainees = metrics["total_trainees"]
+    employment_rate = metrics["employment_rate_pct"]
+    verified_employment = metrics["verified_employment"]
+    self_reported = metrics["self_reported_employment"]
+    retention_6m = metrics["macro_retention_6m"]
 
-    # Wage growth
-    avg_growth = db.query(func.avg(WageHistory.growth_pct_since_starting)).filter(
-        WageHistory.growth_pct_since_starting > 0
-    ).scalar()
-    avg_wage_growth = round(float(avg_growth), 1) if avg_growth else None
-
-    # Time to employment (avg days)
-    emp_records_with_dates = db.query(EmploymentRecord).filter(
-        EmploymentRecord.status == "EMPLOYED",
-        EmploymentRecord.joining_date.isnot(None)
-    ).all()
-    time_to_emp_days = []
-    for e in emp_records_with_dates:
-        t_rec = db.query(TrainingRecord).filter(
-            TrainingRecord.trainee_id == e.trainee_id,
-            TrainingRecord.completion_status == "COMPLETED"
-        ).first()
-        if t_rec and t_rec.end_date and e.joining_date:
-            try:
-                days = (
-                    datetime.strptime(e.joining_date, "%Y-%m-%d") -
-                    datetime.strptime(t_rec.end_date, "%Y-%m-%d")
-                ).days
-                if days >= 0:
-                    time_to_emp_days.append(days)
-            except Exception:
-                pass
-
-    avg_time_to_emp = round(sum(time_to_emp_days) / len(time_to_emp_days)) if time_to_emp_days else None
-
-    # Retention from followups
-    fup_6m = db.query(func.count(Followup.id)).filter(Followup.checkpoint == "6_MONTHS").scalar() or 0
-    fup_6m_responded = db.query(func.count(Followup.id)).filter(
-        Followup.checkpoint == "6_MONTHS", Followup.status == "RESPONDED"
-    ).scalar() or 0
-    retention_6m = round((fup_6m_responded / fup_6m) * 100.0, 1) if fup_6m >= 3 else None
-
-    # District performance
-    district_data = []
-    districts = db.query(Trainee.district, Trainee.state, func.count(Trainee.id)).filter(
-        Trainee.district.isnot(None)
-    ).group_by(Trainee.district, Trainee.state).all()
-    for dist, state, d_total in districts:
-        d_ids = [t.id for t in db.query(Trainee.id).filter(Trainee.district == dist).all()]
-        d_emp = db.query(func.count(EmploymentRecord.id)).filter(
-            EmploymentRecord.trainee_id.in_(d_ids), EmploymentRecord.status == "EMPLOYED"
-        ).scalar() if d_ids else 0
-        district_data.append({
-            "district": dist, "state": state or "Unspecified",
-            "trainees": d_total, "employed": d_emp,
-            "employment_rate": round((d_emp / max(d_total, 1)) * 100.0, 1) if d_total > 0 else 0.0
-        })
-
-    # Course performance
-    course_performance = []
-    for c in db.query(Course).all():
-        c_enrolled = db.query(func.count(TrainingRecord.id)).filter(TrainingRecord.course_id == c.id).scalar() or 0
-        c_completed = db.query(func.count(TrainingRecord.id)).filter(
-            TrainingRecord.course_id == c.id, TrainingRecord.completion_status == "COMPLETED"
-        ).scalar() or 0
-        c_t_ids = [r.trainee_id for r in db.query(TrainingRecord.trainee_id).filter(TrainingRecord.course_id == c.id).all()]
-        c_emp = db.query(func.count(EmploymentRecord.id)).filter(
-            EmploymentRecord.trainee_id.in_(c_t_ids), EmploymentRecord.status == "EMPLOYED"
-        ).scalar() if c_t_ids else 0
-        if c_enrolled > 0:
-            course_performance.append({
-                "course_name": c.course_name,
-                "domain": c.domain,
-                "enrolled": c_enrolled,
-                "completion_rate": round((c_completed / c_enrolled) * 100.0, 1),
-                "employment_rate": round((c_emp / c_enrolled) * 100.0, 1),
-                "verified_employment": db.query(func.count(EmploymentRecord.id)).filter(
-                    EmploymentRecord.trainee_id.in_(c_t_ids),
-                    EmploymentRecord.status == "EMPLOYED",
-                    EmploymentRecord.verification_status == "VERIFIED"
-                ).scalar() if c_t_ids else 0
-            })
-
-    # Build evidence-based insight blocks
     insights = []
-
     if total_trainees == 0:
         insights.append({
             "type": "INFO",
             "title": "No data available yet",
-            "observation": "The platform has no trainee records. Policy insights will appear as trainees, training providers, and employers interact with the system.",
+            "observation": "No consenting trainee records match the selected filters.",
             "evidence": [],
-            "data_quality": "INSUFFICIENT"
+            "data_quality": "INSUFFICIENT",
         })
     else:
         insights.append({
             "type": "EMPLOYMENT_OUTCOME",
             "title": "Employment Outcome",
-            "observation": f"Based on available data, {employment_rate}% of registered trainees have reported employment.",
+            "observation": f"{employment_rate}% of consenting trainees in scope have a current self-reported or verified employment outcome.",
             "evidence": [
-                {"label": "Total trainees", "value": total_trainees},
-                {"label": "Reported employed", "value": total_employed},
-                {"label": "Employment rate", "value": f"{employment_rate}%"},
-                {"label": "Employer-verified employment", "value": verified_employment},
-                {"label": "Verification rate", "value": f"{verification_rate}%" if total_employed > 0 else "N/A"},
+                {"label": "Consenting trainees in scope", "value": total_trainees},
+                {"label": "Current employed outcomes", "value": metrics["employed_trainees"]},
+                {"label": "Employer-verified outcomes", "value": verified_employment},
+                {"label": "Self-reported employed outcomes", "value": self_reported},
+                {"label": "Verified employment rate", "value": f"{metrics['verified_employment_rate_pct']}%"},
             ],
-            "data_quality": "VERIFIED" if verified_employment >= 3 else ("PARTIAL" if total_employed > 0 else "INSUFFICIENT"),
-            "caveat": "Based on available data. Self-reported employment requires further verification before policy conclusions."
+            "data_quality": "VERIFIED" if verified_employment >= 3 else ("PARTIAL" if metrics["employed_trainees"] else "INSUFFICIENT"),
+            "caveat": "Self-reported employment is useful for follow-up workflows but is not treated as employer verification.",
         })
 
         insights.append({
             "type": "TRAINING_EFFECTIVENESS",
             "title": "Training Effectiveness",
-            "observation": f"Observed pattern: {completion_rate}% of enrolled trainees completed their training programs.",
+            "observation": f"{metrics['training_completed']} trainees in scope have completed training.",
             "evidence": [
-                {"label": "Total enrollment records", "value": total_training_records},
-                {"label": "Completed training", "value": training_completed},
-                {"label": "Completion rate", "value": f"{completion_rate}%"},
-                {"label": "Certification issuance rate", "value": f"{cert_rate}%"},
+                {"label": "Training completed", "value": metrics["training_completed"]},
+                {"label": "Certificates issued", "value": metrics["certificates_uploaded"]},
+                {"label": "Certificate issuance rate", "value": f"{metrics['certificate_issuance_rate_pct']}%"},
+                {"label": "Certified-to-employed conversion", "value": f"{metrics['placement_conversion_rate']}%"},
             ],
-            "data_quality": "PARTIAL" if total_training_records > 0 else "INSUFFICIENT",
-            "caveat": "Requires further investigation as dropout reasons are not always captured."
+            "data_quality": "PARTIAL" if metrics["training_completed"] else "INSUFFICIENT",
+            "caveat": "Completion and certification are observed records only; missing provider uploads are not imputed.",
         })
-
-        if avg_wage_growth is not None:
-            insights.append({
-                "type": "WAGE_GROWTH",
-                "title": "Wage Growth",
-                "observation": f"Observed pattern: Average wage growth of {avg_wage_growth}% from starting salary.",
-                "evidence": [
-                    {"label": "Average wage growth", "value": f"+{avg_wage_growth}%"},
-                    {"label": "Records with wage history", "value": db.query(func.count(WageHistory.id)).scalar() or 0},
-                ],
-                "data_quality": "PARTIAL",
-                "caveat": "Based on available wage history records. Self-reported salaries are unverified unless confirmed by employer."
-            })
-
-        if avg_time_to_emp is not None:
-            insights.append({
-                "type": "TIME_TO_EMPLOYMENT",
-                "title": "Time to Employment",
-                "observation": f"Observed pattern: Average {avg_time_to_emp} days from training completion to employment.",
-                "evidence": [
-                    {"label": "Average days to employment", "value": avg_time_to_emp},
-                    {"label": "Records used for calculation", "value": len(time_to_emp_days)},
-                ],
-                "data_quality": "PARTIAL" if len(time_to_emp_days) >= 3 else "INSUFFICIENT",
-                "caveat": "Requires further investigation as not all trainees report joining dates."
-            })
 
         if retention_6m is not None:
             insights.append({
                 "type": "RETENTION",
                 "title": "6-Month Retention",
-                "observation": f"Based on available data, {retention_6m}% responded to 6-month follow-up surveys.",
+                "observation": f"{retention_6m}% of 6-month follow-up respondents reported being employed.",
                 "evidence": [
-                    {"label": "6-month follow-ups scheduled", "value": fup_6m},
-                    {"label": "Responded", "value": fup_6m_responded},
-                    {"label": "Response rate", "value": f"{retention_6m}%"},
+                    {"label": "6-month responses", "value": metrics["retention"]["6_MONTHS"]["responses"]},
+                    {"label": "Self-reported employed at 6 months", "value": metrics["retention"]["6_MONTHS"]["employed"]},
+                    {"label": "Verified retained outcomes", "value": metrics["retention"]["6_MONTHS"]["verified"]},
                 ],
-                "data_quality": "VERIFIED" if fup_6m >= 10 else "PARTIAL",
-                "caveat": "Response rate to surveys does not directly equal retention rate. Requires further investigation."
-            })
-
-        if district_data:
-            insights.append({
-                "type": "DISTRICT_PERFORMANCE",
-                "title": "Geographic Distribution",
-                "observation": f"Data available for {len(district_data)} districts. Employment outcomes vary by location.",
-                "evidence": [{"label": f"{d['district']} ({d['state']})", "value": f"{d['employment_rate']}% employment ({d['trainees']} trainees)"} for d in district_data[:5]],
                 "data_quality": "PARTIAL",
-                "caveat": "Based on available data. Geographic coverage is limited by enrollment patterns."
+                "caveat": "This is follow-up response retention, not proof of continuous same-employer tenure.",
             })
 
     return {
         "generated_at": datetime.utcnow().isoformat(),
-        "data_disclaimer": "This is a decision support tool. All metrics are based on available database records. Insufficient data returns N/A or flags low confidence. Do NOT use as sole basis for policy decisions.",
+        "data_disclaimer": metrics["data_note"],
+        "active_filters": metrics["active_filters"],
         "summary_metrics": {
             "total_trainees": total_trainees,
             "employment_rate_pct": employment_rate,
-            "completion_rate_pct": completion_rate,
-            "certification_rate_pct": cert_rate,
-            "avg_wage_growth_pct": avg_wage_growth,
-            "avg_time_to_employment_days": avg_time_to_emp,
+            "verified_employment_rate_pct": metrics["verified_employment_rate_pct"],
+            "avg_wage_growth_pct": metrics["avg_wage_growth_pct"],
             "retention_6m_pct": retention_6m,
             "verified_employment_count": verified_employment,
+            "self_reported_employment_count": self_reported,
         },
         "insights": insights,
-        "course_performance": course_performance,
-        "district_performance": district_data,
+        "course_performance": metrics["course_employment_stats"],
+        "district_performance": metrics["districts_data"],
+        "data_trust": metrics["data_trust"],
+        "ai_status": metrics["ai_status"],
     }
 
-
-# ══════════════════════════════════════════════
 # 11. REPORTS — Filtered + CSV Export
 # ══════════════════════════════════════════════
 

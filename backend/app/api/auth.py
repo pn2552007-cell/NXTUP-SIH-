@@ -8,7 +8,7 @@ from app.schemas.schemas import UserRegister, UserLogin, Token, UserResponse
 from app.auth.jwt_handler import (
     verify_password, get_password_hash, create_access_token, get_current_user
 )
-from app.utils.id_generator import generate_skillpulse_id
+from app.utils.id_generator import generate_nextup_id
 from app.utils.audit import log_audit_event
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
@@ -26,6 +26,8 @@ def register(user_in: UserRegister, db: Session = Depends(get_db)):
     role = user_in.role.upper()
     if role == "PROVIDER":
         role = "TRAINING_PROVIDER"
+    if role not in ("TRAINEE", "TRAINING_PROVIDER", "EMPLOYER"):
+        raise HTTPException(403, "This role cannot be created through public registration.")
 
     user = User(
         email=user_in.email,
@@ -39,15 +41,16 @@ def register(user_in: UserRegister, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(user)
 
-    skillpulse_id = None
+    nextup_id = None
     consent_given = False
 
     # Create associated role profile
     if user.role == "TRAINEE":
-        skillpulse_id = generate_skillpulse_id(db)
+        nextup_id = generate_nextup_id(db)
         trainee = Trainee(
             user_id=user.id,
-            skillpulse_id=skillpulse_id,
+            nextup_id=nextup_id,
+            skillpulse_id=nextup_id,  # keep backward compat field identical
             full_name=user.full_name,
             email=user.email,
             phone=user.phone,
@@ -58,6 +61,10 @@ def register(user_in: UserRegister, db: Session = Depends(get_db)):
         db.add(trainee)
         db.commit()
     elif user.role in ("TRAINING_PROVIDER", "PROVIDER"):
+        # Normalize every provider variant to TRAINING_PROVIDER so provider
+        # APIs and frontend role checks stay consistent.
+        user.role = "TRAINING_PROVIDER"
+        db.flush()
         provider = Provider(
             user_id=user.id,
             organization_name=user_in.organization_name or user_in.full_name,
@@ -103,24 +110,25 @@ def register(user_in: UserRegister, db: Session = Depends(get_db)):
         user_id=user.id,
         email=user.email,
         full_name=user.full_name,
-        skillpulse_id=skillpulse_id,
+        nextup_id=nextup_id,
+        skillpulse_id=nextup_id,
         consent_given=consent_given
     )
 
 @router.post("/login", response_model=Token)
 def login(login_data: UserLogin, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == login_data.email).first()
-    if not user or not verify_password(login_data.password, user.hashed_password):
+    if not user or not user.is_active or not verify_password(login_data.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Bearer"}
         )
 
-    skillpulse_id = None
+    nextup_id = None
     consent_given = False
     if user.trainee_profile:
-        skillpulse_id = user.trainee_profile.skillpulse_id
+        nextup_id = user.trainee_profile.nextup_id or user.trainee_profile.skillpulse_id
         consent_given = user.trainee_profile.consent_given
 
     log_audit_event(
@@ -142,16 +150,17 @@ def login(login_data: UserLogin, db: Session = Depends(get_db)):
         user_id=user.id,
         email=user.email,
         full_name=user.full_name,
-        skillpulse_id=skillpulse_id,
+        nextup_id=nextup_id,
+        skillpulse_id=nextup_id,
         consent_given=consent_given
     )
 
 @router.get("/me", response_model=UserResponse)
 def get_me(current_user: User = Depends(get_current_user)):
-    skillpulse_id = None
+    nextup_id = None
     consent_given = False
     if current_user.trainee_profile:
-        skillpulse_id = current_user.trainee_profile.skillpulse_id
+        nextup_id = current_user.trainee_profile.nextup_id or current_user.trainee_profile.skillpulse_id
         consent_given = current_user.trainee_profile.consent_given
 
     return UserResponse(
@@ -162,6 +171,7 @@ def get_me(current_user: User = Depends(get_current_user)):
         phone=current_user.phone,
         is_active=current_user.is_active,
         created_at=current_user.created_at,
-        skillpulse_id=skillpulse_id,
+        nextup_id=nextup_id,
+        skillpulse_id=nextup_id,
         consent_given=consent_given
     )

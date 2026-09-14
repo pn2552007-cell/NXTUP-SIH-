@@ -108,6 +108,7 @@ export const ProviderDashboard = () => {
   const filteredTrainees = trainees.filter((t) => {
     const matchesSearch =
       t.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      t.nextup_id?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       t.skillpulse_id?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       t.course_name?.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCourse = selectedCourse === 'ALL' || t.course_name === selectedCourse;
@@ -191,7 +192,7 @@ export const ProviderDashboard = () => {
         <MetricCard
           title="Employment Rate"
           value={data ? `${data.employment_rate}%` : '0%'}
-          subtitle="Verified Placed"
+          subtitle={`Employer-verified: ${data?.verified_employment_count || 0} • Self-reported pending: ${data?.self_reported_pending_count || 0}`}
           icon={Briefcase}
           accentColor="emerald"
         />
@@ -259,6 +260,83 @@ export const ProviderDashboard = () => {
         </div>
       </div>
 
+      {/* Provider outcome insights: verification, follow-ups, retention, skill gaps */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="glass-panel rounded-2xl p-6 space-y-3">
+          <h3 className="text-sm font-bold text-white">Data trust split</h3>
+          <p className="text-xs text-slate-400">Self-reported outcomes stay separate from employer-verified outcomes.</p>
+          <div className="space-y-2 text-xs">
+            <div className="flex items-center justify-between rounded-lg bg-slate-900/70 px-3 py-2">
+              <span className="text-emerald-300 font-semibold">Employer verified</span>
+              <span className="font-mono text-white">{data?.verified_employment_count || 0}</span>
+            </div>
+            <div className="flex items-center justify-between rounded-lg bg-slate-900/70 px-3 py-2">
+              <span className="text-amber-300 font-semibold">Self-reported, pending</span>
+              <span className="font-mono text-white">{data?.self_reported_pending_count || 0}</span>
+            </div>
+            <div className="flex items-center justify-between rounded-lg bg-slate-900/70 px-3 py-2">
+              <span className="text-slate-300 font-semibold">Correction requested</span>
+              <span className="font-mono text-white">{data?.correction_requested_count || 0}</span>
+            </div>
+            <div className="flex items-center justify-between rounded-lg bg-slate-900/70 px-3 py-2">
+              <span className="text-rose-300 font-semibold">Rejected</span>
+              <span className="font-mono text-white">{data?.rejected_count || 0}</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="glass-panel rounded-2xl p-6 space-y-3">
+          <h3 className="text-sm font-bold text-white">Follow-ups & retention</h3>
+          <p className="text-xs text-slate-400">
+            Checkpoints: 30 days → 90 days → 6 months → 12 months. States: Scheduled → Sent → Responded.
+          </p>
+          {data?.followup_by_status && Object.keys(data.followup_by_status).length > 0 ? (
+            <div className="space-y-2 text-xs">
+              {Object.entries(data.followup_by_status).map(([st, count]) => (
+                <div key={st} className="flex items-center justify-between rounded-lg bg-slate-900/70 px-3 py-2">
+                  <span className="font-semibold text-slate-200">{st}</span>
+                  <span className="font-mono text-white">{count}</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-xs text-slate-500">No follow-ups scheduled for this cohort yet.</p>
+          )}
+          <p className="text-xs text-slate-400">
+            6-month retention: <strong className="text-white">{data?.retention_6m_pct != null ? `${data.retention_6m_pct}%` : 'Insufficient responses'}</strong>
+            {data?.retention_6m_responses ? ` (${data.retention_6m_responses} responses)` : ''}. Follow-up retention is self-reported until employer-verified.
+          </p>
+        </div>
+
+        <div className="glass-panel rounded-2xl p-6 space-y-3">
+          <h3 className="text-sm font-bold text-white">Skill gaps & non-placement</h3>
+          <p className="text-xs text-slate-400">Actionable curriculum signals from live analyses and trainee reports.</p>
+          {(data?.top_missing_skills || []).length > 0 ? (
+            <div className="flex flex-wrap gap-1.5">
+              {data.top_missing_skills.map((row) => (
+                <span key={row.skill} className="px-2 py-1 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-200 text-[11px]">
+                  {row.skill} × {row.count}
+                </span>
+              ))}
+            </div>
+          ) : (
+            <p className="text-xs text-slate-500">No missing-skill signals yet. Run AI skill-gap analyses from trainee profiles.</p>
+          )}
+          {(data?.non_placement_reasons || []).length > 0 ? (
+            <div className="space-y-1.5 text-xs">
+              {data.non_placement_reasons.map((row) => (
+                <div key={row.reason} className="flex items-center justify-between rounded-lg bg-slate-900/70 px-3 py-2">
+                  <span className="text-slate-200">{row.reason}</span>
+                  <span className="font-mono text-white">{row.count}</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-xs text-slate-500">No non-placement reasons reported yet.</p>
+          )}
+        </div>
+      </div>
+
       {/* Trainees Roster Table */}
       <div className="glass-panel rounded-2xl p-6 space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-4">
@@ -268,7 +346,7 @@ export const ProviderDashboard = () => {
               Trainee Longitudinal Outcome Roster
             </h3>
             <p className="text-xs text-slate-400">
-              Real trainee cohort tracking with persistent SkillPulse IDs.
+              Real trainee cohort tracking with persistent NEXTUP IDs.
             </p>
           </div>
 
@@ -290,7 +368,7 @@ export const ProviderDashboard = () => {
           <table className="w-full text-left text-xs">
             <thead className="bg-slate-900/90 text-slate-400 uppercase font-mono text-[10px] border-b border-slate-800">
               <tr>
-                <th className="px-3 py-2.5">SkillPulse ID</th>
+                <th className="px-3 py-2.5">NEXTUP ID</th>
                 <th className="px-3 py-2.5">Trainee Name</th>
                 <th className="px-3 py-2.5">Course</th>
                 <th className="px-3 py-2.5 text-center">Training</th>
@@ -303,7 +381,7 @@ export const ProviderDashboard = () => {
               {filteredTrainees.length > 0 ? (
                 filteredTrainees.map((t) => (
                   <tr key={t.trainee_id} className="hover:bg-slate-900/40">
-                    <td className="px-3 py-2.5 font-mono text-emerald-400">{t.skillpulse_id}</td>
+                    <td className="px-3 py-2.5 font-mono text-emerald-400">{t.nextup_id || t.skillpulse_id}</td>
                     <td className="px-3 py-2.5 font-semibold text-white">{t.full_name}</td>
                     <td className="px-3 py-2.5 text-slate-400">{t.course_name || '—'}</td>
                     <td className="px-3 py-2.5 text-center">

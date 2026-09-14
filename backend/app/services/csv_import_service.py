@@ -81,7 +81,7 @@ class CsvImportService:
                 else:
                     user = User(
                         email=clean_email,
-                        hashed_password=get_password_hash("SkillPulse@Init2026"),
+                        hashed_password=get_password_hash("NextUp@Init2026"),
                         role="TRAINEE",
                         full_name=full_name.strip(),
                         phone=row.get("phone", "").strip() or None,

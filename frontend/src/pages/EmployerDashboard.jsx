@@ -51,6 +51,7 @@ export const EmployerDashboard = () => {
 
   const filteredCandidates = candidates.filter((c) => {
     return (
+      c.nextup_id?.toLowerCase().includes(searchCandidate.toLowerCase()) ||
       c.skillpulse_id?.toLowerCase().includes(searchCandidate.toLowerCase()) ||
       c.skills?.some((s) => s.toLowerCase().includes(searchCandidate.toLowerCase())) ||
       c.course_completed?.toLowerCase().includes(searchCandidate.toLowerCase())
@@ -71,6 +72,9 @@ export const EmployerDashboard = () => {
           </div>
           <p className="text-xs text-slate-300">
             Industry: {data?.industry || 'Enterprise Partner'} • Employment Outcome Verification Gateway
+          </p>
+          <p className="text-[11px] text-slate-500">
+            Verification confirms trainee-reported outcomes. It does not replace employer HR or payroll systems.
           </p>
         </div>
 
@@ -94,7 +98,7 @@ export const EmployerDashboard = () => {
         <MetricCard
           title="Pending Verification Requests"
           value={data?.pending_verifications_count || 0}
-          subtitle="Trainees reporting hire"
+          subtitle="Self-reported hires awaiting review"
           icon={AlertCircle}
           accentColor="amber"
         />
@@ -135,7 +139,7 @@ export const EmployerDashboard = () => {
           <table className="w-full text-left text-xs">
             <thead className="bg-slate-900/90 text-slate-400 uppercase font-mono text-[10px] border-b border-slate-800">
               <tr>
-                <th className="px-3 py-2.5">SkillPulse ID</th>
+                <th className="px-3 py-2.5">NEXTUP ID</th>
                 <th className="px-3 py-2.5">Candidate Name</th>
                 <th className="px-3 py-2.5">Course Completed</th>
                 <th className="px-3 py-2.5">Reported Job Title</th>
@@ -148,7 +152,7 @@ export const EmployerDashboard = () => {
               {pendingList.length > 0 ? (
                 pendingList.map((item) => (
                   <tr key={item.id} className="hover:bg-slate-900/40">
-                    <td className="px-3 py-2.5 font-mono text-emerald-400">{item.skillpulse_id}</td>
+                    <td className="px-3 py-2.5 font-mono text-emerald-400">{item.nextup_id || item.skillpulse_id}</td>
                     <td className="px-3 py-2.5 font-semibold text-white">{item.trainee_name}</td>
                     <td className="px-3 py-2.5 text-slate-400">{item.course_name || '—'}</td>
                     <td className="px-3 py-2.5 text-white">{item.reported_job || '—'}</td>
@@ -194,7 +198,7 @@ export const EmployerDashboard = () => {
           <table className="w-full text-left text-xs">
             <thead className="bg-slate-900/90 text-slate-400 uppercase font-mono text-[10px] border-b border-slate-800">
               <tr>
-                <th className="px-3 py-2.5">SkillPulse ID</th>
+                <th className="px-3 py-2.5">NEXTUP ID</th>
                 <th className="px-3 py-2.5">Candidate Name</th>
                 <th className="px-3 py-2.5">Job Title</th>
                 <th className="px-3 py-2.5">Joining Date</th>
@@ -206,7 +210,7 @@ export const EmployerDashboard = () => {
               {verifiedList.length > 0 ? (
                 verifiedList.map((item) => (
                   <tr key={item.id} className="hover:bg-slate-900/40">
-                    <td className="px-3 py-2.5 font-mono text-emerald-400">{item.skillpulse_id}</td>
+                    <td className="px-3 py-2.5 font-mono text-emerald-400">{item.nextup_id || item.skillpulse_id}</td>
                     <td className="px-3 py-2.5 font-semibold text-white">{item.trainee_name}</td>
                     <td className="px-3 py-2.5 text-slate-300">{item.reported_job}</td>
                     <td className="px-3 py-2.5 font-mono text-slate-400">{item.reported_joining_date}</td>
@@ -261,7 +265,7 @@ export const EmployerDashboard = () => {
           <table className="w-full text-left text-xs">
             <thead className="bg-slate-900/90 text-slate-400 uppercase font-mono text-[10px] border-b border-slate-800">
               <tr>
-                <th className="px-3 py-2.5">SkillPulse ID</th>
+                <th className="px-3 py-2.5">NEXTUP ID</th>
                 <th className="px-3 py-2.5">Course Completed</th>
                 <th className="px-3 py-2.5">Location</th>
                 <th className="px-3 py-2.5">Skills</th>
@@ -272,7 +276,7 @@ export const EmployerDashboard = () => {
               {filteredCandidates.length > 0 ? (
                 filteredCandidates.map((c, idx) => (
                   <tr key={idx} className="hover:bg-slate-900/40">
-                    <td className="px-3 py-2.5 font-mono text-emerald-400">{c.skillpulse_id}</td>
+                    <td className="px-3 py-2.5 font-mono text-emerald-400">{c.nextup_id || c.skillpulse_id}</td>
                     <td className="px-3 py-2.5 text-slate-300">{c.course_completed || 'Vocational Training'}</td>
                     <td className="px-3 py-2.5 text-slate-400">{c.location || '—'}</td>
                     <td className="px-3 py-2.5">

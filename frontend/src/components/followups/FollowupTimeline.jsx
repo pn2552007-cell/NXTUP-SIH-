@@ -8,6 +8,8 @@ export const FollowupTimeline = ({ followups = [], onUpdated }) => {
   const { showSuccess, showError } = useToast();
   const [selectedFollowup, setSelectedFollowup] = useState(null);
   const [employed, setEmployed] = useState(true);
+  const [employerName, setEmployerName] = useState('');
+  const [jobTitle, setJobTitle] = useState('');
   const [currentSalary, setCurrentSalary] = useState('');
   const [satisfaction, setSatisfaction] = useState(5);
   const [notes, setNotes] = useState('');
@@ -24,9 +26,11 @@ export const FollowupTimeline = ({ followups = [], onUpdated }) => {
   const handleOpenResponder = (fup) => {
     setSelectedFollowup(fup);
     setEmployed(fup.response_data?.employed ?? true);
+    setEmployerName(fup.response_data?.employer_name || '');
+    setJobTitle(fup.response_data?.job_title || '');
     setCurrentSalary(fup.response_data?.salary || fup.response_data?.current_salary || '');
-    setSatisfaction(fup.response_data?.satisfaction || 5);
-    setNotes(fup.response_data?.notes || '');
+    setSatisfaction(fup.response_data?.satisfaction_score || fup.response_data?.satisfaction || 5);
+    setNotes(Array.isArray(fup.response_data?.skills_used) ? fup.response_data.skills_used.join(', ') : (fup.response_data?.notes || ''));
   };
 
   const handleSubmitResponse = async (e) => {
@@ -38,31 +42,34 @@ export const FollowupTimeline = ({ followups = [], onUpdated }) => {
       await followupsAPI.respond({
         followup_id: selectedFollowup.id,
         employed,
-        current_salary: currentSalary ? Number(currentSalary) : null,
-        same_employer: true,
-        job_satisfaction: Number(satisfaction),
-        notes,
+        employer_name: employed ? employerName : null,
+        job_title: employed ? jobTitle : null,
+        current_salary: employed && currentSalary ? Number(currentSalary) : null,
+        satisfaction_score: Number(satisfaction),
+        skills_used: notes ? notes.split(',').map((s) => s.trim()).filter(Boolean) : [],
       });
 
       showSuccess(`Response submitted for ${checkpointsMap[selectedFollowup.checkpoint]?.label || selectedFollowup.checkpoint}`);
       setSelectedFollowup(null);
+      setEmployerName('');
+      setJobTitle('');
       if (onUpdated) onUpdated();
     } catch (err) {
-      showError('Failed to record follow-up response');
+      showError(err.response?.data?.detail || 'Failed to record follow-up response');
       console.error(err);
     } finally {
       setSubmitting(false);
     }
   };
 
-  const handleSimulateMockDispatch = async (cp) => {
+  const handleSendFollowup = async (fup) => {
     setTriggering(true);
     try {
-      const res = await followupsAPI.triggerMock(cp);
-      showSuccess(`[Mock Gateway] Dispatched simulated ${res.data.channel} follow-up message`);
+      await followupsAPI.send(fup.id);
+      showSuccess(`${checkpointsMap[fup.checkpoint]?.label || fup.checkpoint} marked as sent.`);
       if (onUpdated) onUpdated();
     } catch (err) {
-      showError('Mock notification dispatch failed');
+      showError(err.response?.data?.detail || 'Could not mark follow-up as sent');
       console.error(err);
     } finally {
       setTriggering(false);
@@ -130,25 +137,27 @@ export const FollowupTimeline = ({ followups = [], onUpdated }) => {
                       </span>
                     </div>
                     <p className="text-xs text-slate-300 mt-1">{cpInfo.prompt}</p>
-                    {fup.mock_sent_message && (
-                      <div className="mt-2 p-2 rounded-lg bg-slate-950 border border-slate-800 text-[11px] text-slate-400 italic">
-                        💬 "{fup.mock_sent_message}"
-                      </div>
+                    {fup.scheduled_date && (
+                      <span className="text-[10px] text-slate-500 font-mono">
+                        Scheduled: {fup.scheduled_date}
+                      </span>
                     )}
                   </div>
                 </div>
 
                 {/* Actions */}
                 <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => handleSimulateMockDispatch(fup.checkpoint)}
-                    disabled={triggering}
-                    title="Simulate WhatsApp/SMS Mock dispatch"
-                    className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold flex items-center gap-1.5 transition-colors"
-                  >
-                    <Send className="w-3.5 h-3.5 text-cyan-400" />
-                    <span className="hidden sm:inline">Mock Send</span>
-                  </button>
+                  {(fup.status === 'SCHEDULED' || fup.status === 'PENDING') && (
+                    <button
+                      onClick={() => handleSendFollowup(fup)}
+                      disabled={triggering}
+                      title="Mark this checkpoint as sent to the trainee"
+                      className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+                    >
+                      <Send className="w-3.5 h-3.5 text-cyan-400" />
+                      <span className="hidden sm:inline">Send</span>
+                    </button>
+                  )}
 
                   <button
                     onClick={() => handleOpenResponder(fup)}
@@ -163,18 +172,24 @@ export const FollowupTimeline = ({ followups = [], onUpdated }) => {
               {isResponded && fup.response_data && (
                 <div className="mt-3 pt-3 border-t border-slate-800/80 flex flex-wrap gap-4 text-xs text-slate-400">
                   <span>
-                    Status: <strong className="text-emerald-400">{fup.response_data.employed ? 'Employed' : 'Searching'}</strong>
+                    Status: <strong className="text-emerald-400">{fup.response_data.employed ? 'Employed (self-reported)' : 'Searching'}</strong>
                   </span>
-                  {fup.response_data.salary && (
+                  {fup.response_data.employer_name && (
                     <span>
-                      Salary: <strong className="text-white">₹{Number(fup.response_data.salary).toLocaleString()}/mo</strong>
+                      Employer: <strong className="text-white">{fup.response_data.employer_name}</strong>
                     </span>
                   )}
-                  {fup.response_data.satisfaction && (
+                  {(fup.response_data.current_salary || fup.response_data.salary) && (
                     <span>
-                      Satisfaction: <strong className="text-amber-400">{'★'.repeat(fup.response_data.satisfaction)}</strong>
+                      Salary: <strong className="text-white">₹{Number(fup.response_data.current_salary || fup.response_data.salary).toLocaleString()}/mo</strong>
                     </span>
                   )}
+                  {fup.response_data.satisfaction_score && (
+                    <span>
+                      Satisfaction: <strong className="text-amber-400">{'★'.repeat(Number(fup.response_data.satisfaction_score) || 0)}</strong>
+                    </span>
+                  )}
+                  <span className="text-slate-500">Follow-up responses are self-reported until employer-verified.</span>
                 </div>
               )}
             </div>
@@ -225,18 +240,46 @@ export const FollowupTimeline = ({ followups = [], onUpdated }) => {
               </div>
 
               {employed && (
-                <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1">
-                    Current Monthly Salary (₹)
-                  </label>
-                  <input
-                    type="number"
-                    value={currentSalary}
-                    onChange={(e) => setCurrentSalary(e.target.value)}
-                    placeholder="e.g. 28000"
-                    className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500"
-                  />
-                </div>
+                <>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-medium text-slate-300 mb-1">
+                        Employer Name
+                      </label>
+                      <input
+                        type="text"
+                        value={employerName}
+                        onChange={(e) => setEmployerName(e.target.value)}
+                        placeholder="e.g. TechCore Solutions"
+                        className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-slate-300 mb-1">
+                        Job Title
+                      </label>
+                      <input
+                        type="text"
+                        value={jobTitle}
+                        onChange={(e) => setJobTitle(e.target.value)}
+                        placeholder="e.g. Junior Web Developer"
+                        className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-slate-300 mb-1">
+                      Current Monthly Salary (₹)
+                    </label>
+                    <input
+                      type="number"
+                      value={currentSalary}
+                      onChange={(e) => setCurrentSalary(e.target.value)}
+                      placeholder="e.g. 28000"
+                      className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500"
+                    />
+                  </div>
+                </>
               )}
 
               <div>
@@ -257,13 +300,13 @@ export const FollowupTimeline = ({ followups = [], onUpdated }) => {
 
               <div>
                 <label className="block text-xs font-medium text-slate-300 mb-1">
-                  Remarks / Promotions / New Skills Acquired
+                  Skills Used in Current Role (comma-separated)
                 </label>
                 <textarea
                   rows="2"
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  placeholder="e.g. Promoted to Junior Cloud Specialist with 20% wage increment."
+                  placeholder="e.g. React, REST APIs, SQL"
                   className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500"
                 />
               </div>

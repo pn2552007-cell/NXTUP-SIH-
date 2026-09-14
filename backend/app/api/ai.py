@@ -12,6 +12,7 @@ from app.ai.ai_service import AIService
 from app.ai.skill_gap_engine import JOB_PROFILES
 from app.auth.jwt_handler import get_current_user
 from app.utils.audit import log_audit_event
+from app.services.outcome_access import require_trainee_access
 
 router = APIRouter(prefix="/ai", tags=["AI Skill Gap & Role Analytics"])
 
@@ -48,6 +49,7 @@ def analyze_skill_gap(
         trainee = current_user.trainee_profile
 
     if trainee:
+        require_trainee_access(db, current_user, trainee)
         if not trainee_skills:
             trainee_skills = [s.skill_name for s in trainee.skills]
         if not course_skills:
@@ -76,7 +78,7 @@ def analyze_skill_gap(
 
     # Transform matched skills for backwards compatibility with UI
     matched_skills = [
-        {"skill": s, "match_pct": int(job_readiness), "proficiency": "ADVANCED"}
+        {"skill": s}
         for s in ai_result.get("strengths", [])
     ]
 
@@ -89,7 +91,7 @@ def analyze_skill_gap(
         matched_skills=matched_skills,
         missing_skills=ai_result.get("skill_gaps", []),
         recommended_skills=ai_result.get("recommended_skills", []),
-        confidence_score=0.85,
+        confidence_score=None,
         summary=ai_result.get("summary", ""),
         available=ai_result.get("available", True),
         error=ai_result.get("error")
@@ -106,7 +108,7 @@ def analyze_skill_gap(
             recommended_skills_json=ai_result.get("recommended_skills", []),
             job_readiness=job_readiness,
             summary=ai_result.get("summary", ""),
-            confidence_score=0.85
+            confidence_score=None
         )
         db.add(gap_record)
         db.commit()

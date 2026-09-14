@@ -25,7 +25,8 @@ class Token(BaseModel):
     user_id: int
     email: str
     full_name: str
-    skillpulse_id: Optional[str] = None
+    nextup_id: Optional[str] = None
+    skillpulse_id: Optional[str] = None  # backward compat alias
     consent_given: bool = False
 
 class UserResponse(BaseModel):
@@ -36,7 +37,8 @@ class UserResponse(BaseModel):
     phone: Optional[str] = None
     is_active: bool
     created_at: datetime
-    skillpulse_id: Optional[str] = None
+    nextup_id: Optional[str] = None
+    skillpulse_id: Optional[str] = None  # backward compat alias
     consent_given: bool = False
 
     class Config:
@@ -48,7 +50,7 @@ class ConsentCreate(BaseModel):
     consent_status: bool
     consent_version: str = "v1.0"
     purpose: str = "Longitudinal tracking of employment, retention, and wage growth outcomes"
-    consent_text: Optional[str] = "I voluntarily agree to SkillPulse tracking my longitudinal skilling, certification, employment, retention, and wage progression."
+    consent_text: Optional[str] = "I voluntarily agree to NEXTUP (AI-Powered Longitudinal Skilling Outcome Platform) tracking my longitudinal skilling, certification, employment, retention, and wage progression outcomes for public good."
 
 class ConsentRevoke(BaseModel):
     reason: Optional[str] = "User requested consent revocation"
@@ -57,7 +59,8 @@ class ConsentResponse(BaseModel):
     id: int
     user_id: int
     trainee_id: Optional[int] = None
-    skillpulse_id: Optional[str] = None
+    nextup_id: Optional[str] = None
+    skillpulse_id: Optional[str] = None  # backward compat alias
     consent_status: bool
     consent_version: str
     purpose: str
@@ -229,6 +232,7 @@ class TraineeOnboard(BaseModel):
 
 class TraineeResponse(BaseModel):
     id: int
+    nextup_id: Optional[str] = None
     skillpulse_id: str
     full_name: str
     email: str
@@ -258,8 +262,8 @@ class TraineeProfileDetail(BaseModel):
 
 class MatchedSkill(BaseModel):
     skill: str
-    match_pct: int
-    proficiency: Optional[str] = "INTERMEDIATE"
+    match_pct: Optional[int] = None
+    proficiency: Optional[str] = None
 
 class SkillGapRequest(BaseModel):
     trainee_id: Optional[int] = None
@@ -277,7 +281,7 @@ class SkillGapResponse(BaseModel):
     matched_skills: List[MatchedSkill] = Field(default_factory=list)
     missing_skills: List[str] = Field(default_factory=list)
     recommended_skills: List[str] = Field(default_factory=list)
-    confidence_score: float = 0.85
+    confidence_score: Optional[float] = None
     summary: str = ""
     available: bool = True
     error: Optional[str] = None
@@ -297,6 +301,7 @@ class EmploymentReportRequest(BaseModel):
     location_city: Optional[str] = None
     location_state: Optional[str] = None
     employment_type: Optional[str] = "FULL_TIME"
+    non_placement_reason: Optional[str] = None
 
 class EmploymentRecordResponse(BaseModel):
     id: int
@@ -325,7 +330,7 @@ class EmploymentRecordResponse(BaseModel):
 
 class EmployerVerificationRequest(BaseModel):
     employment_record_id: int
-    status: str  # VERIFIED, REJECTED
+    status: str  # VERIFIED, REJECTED, CORRECTION_REQUESTED
     notes: Optional[str] = None
     verified_salary: Optional[float] = None
     verified_joining_date: Optional[str] = None
@@ -433,3 +438,29 @@ class CourseMetric(BaseModel):
     completed: int = 0
     employed: int = 0
     employment_rate_pct: float = 0.0
+
+
+# ==================== ML RISK & INTERVENTION SCHEMAS ====================
+
+class PlacementRiskResponse(BaseModel):
+    available: bool
+    risk_score: Optional[float] = None
+    risk_level: str = "UNKNOWN"
+    prob_placed: Optional[float] = None
+    contributing_factors: List[str] = Field(default_factory=list)
+    disclaimer: str = ""
+    features_used: Optional[Dict[str, Any]] = None
+    error: Optional[str] = None
+
+class InterventionSummary(BaseModel):
+    id: int
+    risk_level: str
+    risk_score: Optional[float]
+    title: str
+    status: str
+    target_skills: Optional[List[str]]
+    recommended_actions: Optional[List[str]]
+    created_at: datetime
+
+    class Config:
+        from_attributes = True

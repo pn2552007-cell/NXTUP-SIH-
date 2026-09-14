@@ -4,6 +4,7 @@ import { useToast } from '../contexts/ToastContext';
 import { MetricCard } from '../components/common/MetricCard';
 import { TraineeJourneyTracker } from '../components/journey/TraineeJourneyTracker';
 import { SkillGapCard } from '../components/ai/SkillGapCard';
+import { PlacementRiskCard } from '../components/ai/PlacementRiskCard';
 import { FollowupTimeline } from '../components/followups/FollowupTimeline';
 import { Badge } from '../components/common/Badge';
 import { Modal } from '../components/common/Modal';
@@ -48,6 +49,7 @@ export const TraineeDashboard = () => {
   const [joiningDate, setJoiningDate] = useState('');
   const [startingSalary, setStartingSalary] = useState('');
   const [locationCity, setLocationCity] = useState('');
+  const [nonPlacementReason, setNonPlacementReason] = useState('');
   const [submittingReport, setSubmittingReport] = useState(false);
 
   // Add Skill State
@@ -85,6 +87,10 @@ export const TraineeDashboard = () => {
 
   const handleEmploymentSubmit = async (e) => {
     e.preventDefault();
+    if (reportStatus === 'EMPLOYED' && (!employerName.trim() || !jobTitle.trim() || !joiningDate || !startingSalary)) {
+      showError('Employer name, job title, joining date, and starting salary are required.');
+      return;
+    }
     setSubmittingReport(true);
     try {
       await employmentAPI.report({
@@ -94,13 +100,17 @@ export const TraineeDashboard = () => {
         joining_date: reportStatus === 'EMPLOYED' ? joiningDate : undefined,
         starting_salary: reportStatus === 'EMPLOYED' && startingSalary ? Number(startingSalary) : undefined,
         location_city: reportStatus === 'EMPLOYED' ? locationCity : undefined,
+        non_placement_reason: reportStatus !== 'EMPLOYED' ? nonPlacementReason || undefined : undefined,
       });
 
-      showSuccess('Employment outcome reported and queued for verification!');
+      showSuccess(reportStatus === 'EMPLOYED'
+        ? 'Employment outcome reported as self-reported and queued for employer verification.'
+        : 'Status updated. This remains self-reported until verified.');
       setIsReportOpen(false);
+      setNonPlacementReason('');
       fetchData();
     } catch (err) {
-      showError('Failed to record employment status');
+      showError(err.response?.data?.detail || 'Failed to record employment status');
       console.error(err);
     } finally {
       setSubmittingReport(false);
@@ -134,14 +144,14 @@ export const TraineeDashboard = () => {
     return (
       <div className="py-24 flex flex-col items-center justify-center text-slate-400 gap-3">
         <RefreshCw className="w-8 h-8 animate-spin text-emerald-400" />
-        <span className="text-sm">Loading your SkillPulse trajectory...</span>
+        <span className="text-sm">Loading your NEXTUP trajectory...</span>
       </div>
     );
   }
 
   return (
     <div className="space-y-8">
-      {/* Top Banner with SkillPulse ID */}
+      {/* Top Banner with NEXTUP ID */}
       <div className="glass-panel-glow rounded-2xl p-6 border-emerald-500/30 flex flex-wrap items-center justify-between gap-4">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
@@ -156,10 +166,10 @@ export const TraineeDashboard = () => {
         <div className="flex items-center gap-4">
           <div className="text-right">
             <div className="text-[10px] uppercase font-bold tracking-widest text-slate-400">
-              Unique SkillPulse ID
+              Unique NEXTUP ID
             </div>
             <div className="text-xl font-mono font-black text-emerald-400">
-              {profile?.skillpulse_id}
+              {profile?.nextup_id || profile?.skillpulse_id}
             </div>
           </div>
           <button
@@ -179,8 +189,8 @@ export const TraineeDashboard = () => {
           value={profile?.employment_status || 'NOT_REPORTED'}
           subtitle={profile?.current_employer || 'No employer reported'}
           icon={Briefcase}
-          badgeText={profile?.verification_status || 'UNVERIFIED'}
-          accentColor="emerald"
+          badgeText={profile?.verification_label || profile?.verification_status || 'Not reported'}
+          accentColor={profile?.verification_status === 'VERIFIED' ? 'emerald' : 'amber'}
         />
 
         <MetricCard
@@ -217,6 +227,9 @@ export const TraineeDashboard = () => {
         traineeSkills={skills.map((s) => s.skill_name)}
         courseSkills={profile?.course_name ? [profile.course_name] : []}
       />
+
+      {/* NEXTUP ML Placement Risk & Targeted Interventions */}
+      <PlacementRiskCard traineeId={profile?.id} onInterventionUpdated={fetchData} />
 
       {/* Salary & Wage Growth Chart */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -412,10 +425,32 @@ export const TraineeDashboard = () => {
               </div>
             </div>
           ) : (
-            <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 text-xs text-slate-300">
-              Your status will be marked as actively seeking. Providers and approved employers can view your profile for potential placement opportunities.
+            <div className="space-y-3">
+              <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 text-xs text-slate-300">
+                Your status will be marked as actively seeking. This stays self-reported. Providers and approved employers can view your profile for potential placement opportunities.
+              </div>
+              <div>
+                <label className="block text-xs text-slate-400 mb-1">Reason not placed (optional, helps providers improve)</label>
+                <select
+                  value={nonPlacementReason}
+                  onChange={(e) => setNonPlacementReason(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500"
+                >
+                  <option value="">Select a reason</option>
+                  <option value="Interviewing — no offer yet">Interviewing — no offer yet</option>
+                  <option value="Skill gap identified">Skill gap identified</option>
+                  <option value="Location constraint">Location constraint</option>
+                  <option value="Salary expectation mismatch">Salary expectation mismatch</option>
+                  <option value="Pursuing higher education">Pursuing higher education</option>
+                  <option value="Health or family reason">Health or family reason</option>
+                </select>
+              </div>
             </div>
           )}
+
+          <p className="text-[11px] text-slate-500">
+            Reports are labelled self-reported until an employer verifies them. Verification confirms the outcome only and does not replace employer HR or payroll records.
+          </p>
 
           <div className="flex justify-end gap-2 pt-2">
             <button

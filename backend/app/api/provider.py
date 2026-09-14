@@ -1,4 +1,5 @@
 from typing import List, Optional
+from collections import Counter
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Response
 from sqlalchemy.orm import Session
@@ -89,10 +90,39 @@ def get_provider_dashboard(
     gap_records = db.query(SkillGapAnalysis).filter(SkillGapAnalysis.trainee_id.in_(trainee_ids)).all() if trainee_ids else []
     avg_gap = round(sum(g.skill_gap_score for g in gap_records) / len(gap_records), 1) if gap_records else None
 
-    # Follow-ups
-    fup_total = db.query(Followup).filter(Followup.trainee_id.in_(trainee_ids)).count() if trainee_ids else 0
-    fup_responded = db.query(Followup).filter(Followup.trainee_id.in_(trainee_ids), Followup.status == "RESPONDED").count() if trainee_ids else 0
+    # Follow-ups: show requested states explicitly so empty cohorts are honest.
+    fup_q = db.query(Followup).filter(Followup.trainee_id.in_(trainee_ids)) if trainee_ids else db.query(Followup).filter(False)
+    fup_total = fup_q.count() if trainee_ids else 0
+    fup_responded = fup_q.filter(Followup.status == "RESPONDED").count() if trainee_ids else 0
+    fup_by_status_rows = fup_q.with_entities(Followup.status, func.count(Followup.id)).group_by(Followup.status).all() if trainee_ids else []
+    fup_by_status = {s or "UNKNOWN": c for s, c in fup_by_status_rows}
     followup_completion_rate = round((fup_responded / max(fup_total, 1)) * 100.0, 1) if fup_total > 0 else 0.0
+
+    # Verification split: self-reported vs employer-verified vs correction/rejected.
+    emp_all = db.query(EmploymentRecord).filter(EmploymentRecord.trainee_id.in_(trainee_ids)).all() if trainee_ids else []
+    verified_count = sum(1 for e in emp_all if e.verification_status == "VERIFIED")
+    self_reported_pending = sum(1 for e in emp_all if e.verification_status in ("PENDING", None))
+    correction_count = sum(1 for e in emp_all if e.verification_status == "CORRECTION_REQUESTED")
+    rejected_count = sum(1 for e in emp_all if e.verification_status == "REJECTED")
+
+    # Non-placement reasons from self-reported SEEKING/NOT_SEEKING records.
+    non_placement_reasons = Counter([e.non_placement_reason for e in emp_all if e.non_placement_reason])
+    top_non_placement = [{"reason": k, "count": v} for k, v in non_placement_reasons.most_common(5)] if non_placement_reasons else []
+
+    # Missing-skill roll-up from persisted skill-gap analyses.
+    missing_counter = Counter()
+    for g in gap_records:
+        for s in (g.missing_skills_json or []):
+            if isinstance(s, str) and s.strip():
+                missing_counter[s.strip()] += 1
+    top_missing_skills = [{"skill": k, "count": v} for k, v in missing_counter.most_common(8)]
+
+    # Retention from actual follow-up responses (self-reported; verified only after employer confirmation).
+    retention_6m_rows = db.query(Followup).filter(
+        Followup.trainee_id.in_(trainee_ids), Followup.checkpoint == "6_MONTHS", Followup.status == "RESPONDED"
+    ).all() if trainee_ids else []
+    retained_6m = sum(1 for f in retention_6m_rows if (f.response_data or {}).get("employed"))
+    retention_6m_pct = round((retained_6m / max(len(retention_6m_rows), 1)) * 100.0, 1) if retention_6m_rows else None
 
     # Course breakdown
     courses_query = db.query(Course)
@@ -130,6 +160,15 @@ def get_provider_dashboard(
         "completion_rate": completion_rate,
         "certification_rate": cert_rate,
         "employment_rate": emp_rate,
+        "verified_employment_count": verified_count,
+        "self_reported_pending_count": self_reported_pending,
+        "correction_requested_count": correction_count,
+        "rejected_count": rejected_count,
+        "retention_6m_pct": retention_6m_pct,
+        "retention_6m_responses": len(retention_6m_rows),
+        "followup_by_status": fup_by_status,
+        "non_placement_reasons": top_non_placement,
+        "top_missing_skills": top_missing_skills,
         "placement_conversion": placement_conversion,
         "avg_starting_salary": avg_start_sal,
         "avg_current_salary": avg_curr_sal,
@@ -329,7 +368,7 @@ def issue_certification(
         trainee_id=cert_in.trainee_id,
         course_id=cert_in.course_id,
         certificate_number=cert_number,
-        issuing_organization=cert_in.issuing_organization or "SkillPulse Verified Provider",
+        issuing_organization=cert_in.issuing_organization or "NEXTUP Verified Provider",
         issue_date=cert_in.issue_date or datetime.utcnow().strftime("%Y-%m-%d"),
         expiry_date=cert_in.expiry_date,
         certificate_url=cert_in.certificate_url,

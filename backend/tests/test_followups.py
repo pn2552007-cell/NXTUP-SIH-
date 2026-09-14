@@ -10,6 +10,7 @@ def test_followup_scheduling_and_response(client):
     })
     token = tr_res.json()["access_token"]
     headers = {"Authorization": f"Bearer {token}"}
+    assert client.post("/api/consent", headers=headers, json={"consent_status": True}).status_code == 200
 
     # 1. Schedule followups
     sched_res = client.post("/api/followups/schedule", headers=headers)

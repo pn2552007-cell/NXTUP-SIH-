@@ -12,55 +12,65 @@ import {
 } from 'lucide-react';
 import { Badge } from '../common/Badge';
 
+const verificationBadge = (status) => {
+  if (status === 'VERIFIED') return <Badge variant="emerald">Employer verified</Badge>;
+  if (status === 'REJECTED') return <Badge variant="rose">Rejected by employer</Badge>;
+  if (status === 'CORRECTION_REQUESTED') return <Badge variant="amber">Correction requested</Badge>;
+  if (status) return <Badge variant="amber">Self-reported — unverified</Badge>;
+  return <Badge variant="slate">Not reported</Badge>;
+};
+
 export const TraineeJourneyTracker = ({ profile, journey = [] }) => {
+  const employmentVerified = profile?.verification_status === 'VERIFIED';
+  const employmentCorrection = profile?.verification_status === 'CORRECTION_REQUESTED';
   const defaultSteps = [
     {
       id: 'CONSENT',
       label: 'Consent & ID',
       icon: ShieldCheck,
       status: profile?.consent_given ? 'COMPLETED' : 'IN_PROGRESS',
-      detail: profile?.skillpulse_id || 'Pending Consent',
-      date: 'Step 1',
+      detail: profile?.nextup_id || profile?.skillpulse_id || 'Pending Consent',
+      date: profile?.consent_given ? 'DPDP consent active' : 'Step 1',
     },
     {
       id: 'TRAINING',
       label: 'Training',
       icon: GraduationCap,
-      status: profile?.training_completion === 'COMPLETED' ? 'COMPLETED' : 'IN_PROGRESS',
-      detail: profile?.course_name || 'Full Stack Engineering',
-      date: `${profile?.attendance_pct || 95}% Attendance`,
+      status: profile?.training_completion === 'COMPLETED' ? 'COMPLETED' : profile?.training_completion === 'NO_TRAINING_RECORD' ? 'PENDING' : 'IN_PROGRESS',
+      detail: profile?.course_name || 'No training record yet',
+      date: profile?.attendance_pct != null ? `${profile.attendance_pct}% Attendance` : 'Attendance pending',
     },
     {
       id: 'CERTIFICATION',
       label: 'Certification',
       icon: Award,
-      status: profile?.certification_status === 'ISSUED' ? 'COMPLETED' : 'IN_PROGRESS',
-      detail: profile?.certificate_number || 'Assessment: 88%',
-      date: `Score: ${profile?.assessment_score || 88}/100`,
+      status: profile?.certification_status === 'ISSUED' ? 'COMPLETED' : 'PENDING',
+      detail: profile?.certificate_number || 'No certificate issued',
+      date: profile?.assessment_score != null ? `Score: ${profile.assessment_score}/100` : 'Assessment pending',
     },
     {
       id: 'EMPLOYMENT',
       label: 'Employment',
       icon: Briefcase,
-      status: profile?.employment_status === 'EMPLOYED' ? 'COMPLETED' : (profile?.employment_status === 'SEARCHING' ? 'IN_PROGRESS' : 'PENDING'),
-      detail: profile?.current_employer ? `${profile.current_job} at ${profile.current_employer}` : 'Searching Opportunities',
-      date: profile?.verification_status === 'VERIFIED' ? 'Verified ✓' : 'Pending Verification',
+      status: employmentVerified ? 'COMPLETED' : profile?.employment_status === 'EMPLOYED' ? 'IN_PROGRESS' : 'PENDING',
+      detail: profile?.current_employer ? `${profile.current_job || 'Role'} at ${profile.current_employer}` : 'No employment reported',
+      date: profile?.verification_status === 'VERIFIED' ? 'Employer verified' : employmentCorrection ? 'Correction requested' : profile?.employment_status === 'EMPLOYED' ? 'Self-reported — unverified' : 'Awaiting report',
     },
     {
       id: 'RETENTION',
       label: '6-Mo Retention',
       icon: Building2,
-      status: profile?.retention_6m ? 'COMPLETED' : (profile?.employment_status === 'EMPLOYED' ? 'IN_PROGRESS' : 'PENDING'),
+      status: profile?.retention_6m ? 'COMPLETED' : profile?.employment_status === 'EMPLOYED' ? 'IN_PROGRESS' : 'PENDING',
       detail: profile?.retention_6m ? 'Active in Industry' : 'Tracking in progress',
-      date: profile?.retention_6m ? 'Verified ✓' : 'Checkpoint',
+      date: profile?.retention_6m ? 'Follow-up responded' : 'Checkpoint',
     },
     {
       id: 'WAGE_GROWTH',
       label: 'Wage Growth',
       icon: TrendingUp,
-      status: profile?.wage_growth_pct > 0 ? 'COMPLETED' : 'IN_PROGRESS',
-      detail: profile?.current_salary ? `₹${profile.current_salary.toLocaleString()}/mo` : 'Baseline: ₹20k',
-      date: `+${profile?.wage_growth_pct || 33.3}% Growth`,
+      status: (profile?.wage_growth_pct || 0) > 0 ? 'COMPLETED' : profile?.current_salary ? 'IN_PROGRESS' : 'PENDING',
+      detail: profile?.current_salary ? `₹${Number(profile.current_salary).toLocaleString()}/mo` : 'No wage reported',
+      date: profile?.wage_growth_pct != null ? `+${profile.wage_growth_pct}% Growth` : 'Growth pending',
     },
   ];
 
@@ -76,10 +86,10 @@ export const TraineeJourneyTracker = ({ profile, journey = [] }) => {
             End-to-end milestone progression from institutional skilling to post-training employment & wage growth.
           </p>
         </div>
-        {profile?.skillpulse_id && (
+        {(profile?.nextup_id || profile?.skillpulse_id) && (
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-900 border border-emerald-500/30 font-mono text-xs text-emerald-400 font-bold">
-            <span>SkillPulse ID:</span>
-            <span className="text-white">{profile.skillpulse_id}</span>
+            <span>NEXTUP ID:</span>
+            <span className="text-white">{profile.nextup_id || profile.skillpulse_id}</span>
           </div>
         )}
       </div>
@@ -138,6 +148,13 @@ export const TraineeJourneyTracker = ({ profile, journey = [] }) => {
             </div>
           );
         })}
+      </div>
+
+      <div className="mt-4 flex flex-wrap items-center gap-2">
+        {verificationBadge(profile?.verification_status)}
+        {profile?.data_trust_note && (
+          <span className="text-[11px] text-slate-500">{profile.data_trust_note}</span>
+        )}
       </div>
     </div>
   );
