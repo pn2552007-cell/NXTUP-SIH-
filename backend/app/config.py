@@ -19,8 +19,8 @@ class Settings(BaseSettings):
     PLATFORM_TITLE: str = "AI-Powered Skilling Outcome Platform"
     DEMO_PASSWORD: str = "NextUp@Demo2026!"
     API_V1_STR: str = "/api"
-    JWT_SECRET: str = "nextup-secure-jwt-secret-key-production"
-    SECRET_KEY: str = "nextup-secure-jwt-secret-key-production"
+    JWT_SECRET: str
+    SECRET_KEY: str
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7  # 7 days
     DATABASE_URL: str = f"sqlite:///{DEFAULT_DB_PATH}"
@@ -34,8 +34,7 @@ class Settings(BaseSettings):
         "http://localhost:3000",
         "http://127.0.0.1:3000",
         "http://localhost:8000",
-        "http://127.0.0.1:8000",
-        "*"
+        "http://127.0.0.1:8000"
     ]
 
     model_config = SettingsConfigDict(
