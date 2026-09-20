@@ -24,7 +24,7 @@ export const Navbar = () => {
           </div>
           <div>
             <span className="text-xl font-bold tracking-tight text-white flex items-center gap-1.5">
-              NEXTUP
+              NXTUP
             </span>
             <div className="text-[9px] text-slate-500 -mt-0.5">AI-Powered Skilling Outcome Platform</div>
           </div>

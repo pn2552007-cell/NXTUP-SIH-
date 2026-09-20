@@ -1,12 +1,12 @@
 {
   "model_name": "LogisticRegression",
-  "dataset": "SYNTHETIC \u2014 Not real government data",
+  "dataset": "NXTUP Independent Train/Test Partitions (Zero Data Leakage)",
   "disclaimer": "Demo prediction only. Model requires validation on real verified outcome data before operational deployment.",
   "sih_problem_id": "SIH26135",
   "team": "Team Lumora",
-  "n_samples": 500,
-  "n_train": 400,
-  "n_test": 100,
+  "n_train": 1200,
+  "n_test": 400,
+  "data_leakage_prevention": "Strictly independent training and evaluation holdout datasets",
   "features": [
     "attendance_pct",
     "assessment_avg_score",
@@ -22,95 +22,98 @@
   ],
   "target": "placement_status",
   "metrics": {
-    "precision": 0.9773,
-    "recall": 0.9149,
-    "f1_score": 0.9451,
-    "roc_auc": 0.9699,
+    "accuracy": 0.81,
+    "precision": 0.947,
+    "recall": 0.8013,
+    "f1_score": 0.8681,
+    "roc_auc": 0.9036,
+    "brier_score": 0.1263,
     "confusion_matrix": [
       [
-        4,
-        2
+        74,
+        14
       ],
       [
-        8,
-        86
+        62,
+        250
       ]
     ],
     "classification_report": {
       "0": {
-        "precision": 0.3333333333333333,
-        "recall": 0.6666666666666666,
-        "f1-score": 0.4444444444444444,
-        "support": 6.0
+        "precision": 0.5441176470588235,
+        "recall": 0.8409090909090909,
+        "f1-score": 0.6607142857142857,
+        "support": 88.0
       },
       "1": {
-        "precision": 0.9772727272727273,
-        "recall": 0.9148936170212766,
-        "f1-score": 0.945054945054945,
-        "support": 94.0
+        "precision": 0.946969696969697,
+        "recall": 0.8012820512820513,
+        "f1-score": 0.8680555555555556,
+        "support": 312.0
       },
-      "accuracy": 0.9,
+      "accuracy": 0.81,
       "macro avg": {
-        "precision": 0.6553030303030303,
-        "recall": 0.7907801418439716,
-        "f1-score": 0.6947496947496947,
-        "support": 100.0
+        "precision": 0.7455436720142603,
+        "recall": 0.8210955710955712,
+        "f1-score": 0.7643849206349207,
+        "support": 400.0
       },
       "weighted avg": {
-        "precision": 0.9386363636363636,
-        "recall": 0.9,
-        "f1-score": 0.915018315018315,
-        "support": 100.0
+        "precision": 0.8583422459893049,
+        "recall": 0.81,
+        "f1-score": 0.8224404761904762,
+        "support": 400.0
       }
     }
   },
   "top_feature_importances": [
     [
       "assessment_avg_score",
-      1.9307826115698754
+      1.1960107489238545
     ],
     [
       "certification_status",
-      1.6496706259924716
+      0.8963189892721558
     ],
     [
-      "prior_experience_years",
-      1.5596534752047757
-    ],
-    [
-      "skill_gap_score",
-      1.438135957435923
-    ],
-    [
-      "state_Uttar Pradesh",
-      1.3456622445751019
-    ],
-    [
-      "verified_skill_count",
-      1.1955302049278758
-    ],
-    [
-      "attendance_pct",
-      1.1414689251532233
+      "state_Karnataka",
+      0.6589054027823976
     ],
     [
       "has_apprenticeship",
-      1.0307096569020613
+      0.6224684129698079
     ],
     [
-      "num_job_applications",
-      0.9704799421108039
+      "state_Gujarat",
+      0.5481617534381349
     ],
     [
-      "state_Rajasthan",
-      0.960205893944646
+      "prior_experience_years",
+      0.49090439714338135
+    ],
+    [
+      "state_Tamil Nadu",
+      0.40765636400802163
+    ],
+    [
+      "course_domain_Cloud Infrastructure",
+      0.2834787929180864
+    ],
+    [
+      "state_Telangana",
+      0.2775624683893632
+    ],
+    [
+      "verified_skill_count",
+      0.25869682858421233
     ]
   ],
-  "trained_on": "2026-09-12",
+  "trained_on": "2026-09-14",
   "baseline_model": "LogisticRegression",
   "baseline_metrics": {
-    "recall": 0.9149,
-    "f1_score": 0.9451,
-    "roc_auc": 0.9699
+    "accuracy": 0.81,
+    "recall": 0.8013,
+    "f1_score": 0.8681,
+    "roc_auc": 0.9036
   }
 }

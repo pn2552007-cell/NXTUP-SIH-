@@ -49,7 +49,7 @@ export const AdminSidebar = () => {
         </div>
         {!collapsed && (
           <div>
-            <div className="text-sm font-bold text-white leading-tight">NEXTUP</div>
+            <div className="text-sm font-bold text-white leading-tight">NXTUP</div>
             <div className="text-[10px] text-indigo-400 font-medium tracking-wide">ADMIN PANEL</div>
           </div>
         )}

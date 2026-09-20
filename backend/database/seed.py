@@ -30,7 +30,7 @@ def seed_database():
     db = SessionLocal()
 
     # Clear existing demo data to ensure a clean state
-    print("Cleaning existing NEXTUP demo data...")
+    print("Cleaning existing NXTUP demo data...")
     try:
         db.query(Intervention).delete()
         db.query(Outcome).delete()
@@ -58,13 +58,13 @@ def seed_database():
 
     hashed_pwd = get_password_hash(DEMO_PWD)
 
-    print("Creating Core Demo Users (NEXTUP Demo — SIH26135 | Team Lumora)...")
+    print("Creating Core Demo Users (NXTUP Demo — SIH26135 | Team Lumora)...")
     # 1. Admin User
     admin_user = User(
-        email="admin@nextup.demo",
+        email="pn2552007@gmail.com",
         hashed_password=hashed_pwd,
         role="ADMIN",
-        full_name="Dr. Rajeshwari Sengupta (Joint Secretary)",
+        full_name="NXTUP Administrator",
         phone="+91 98110 01100",
         is_active=True
     )
@@ -286,7 +286,7 @@ def seed_database():
         trainee_id=primary_trainee.id,
         consent_status=True,
         consent_version="v1.0",
-        consent_text="I voluntarily agree to NEXTUP tracking my training and employment outcomes for public good.",
+        consent_text="I voluntarily agree to NXTUP tracking my training and employment outcomes for public good.",
         ip_address="192.168.1.10"
     )
     db.add(primary_consent)
@@ -781,7 +781,7 @@ def seed_database():
     db.add(demo_intervention)
     db.commit()
 
-    print("NEXTUP Seed completed! (SIH26135 | Team Lumora)")
+    print("NXTUP Seed completed! (SIH26135 | Team Lumora)")
     print(f"Summary:")
     print(f"   - Users: {db.query(User).count()}")
     print(f"   - Trainees: {db.query(Trainee).count()}")
@@ -798,7 +798,7 @@ def seed_database():
     print(f"     Trainee:  trainee@nextup.demo")
     print(f"     Provider: provider@nextup.demo")
     print(f"     Employer: employer@nextup.demo")
-    print(f"     Admin:    admin@nextup.demo")
+    print(f"     Admin:    pn2552007@gmail.com")
     print(f"")
     print(f"   NOTE: All data is DEMO/SYNTHETIC for SIH26135 demonstration only.")
     db.close()

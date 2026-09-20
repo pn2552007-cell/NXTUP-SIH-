@@ -144,14 +144,14 @@ export const TraineeDashboard = () => {
     return (
       <div className="py-24 flex flex-col items-center justify-center text-slate-400 gap-3">
         <RefreshCw className="w-8 h-8 animate-spin text-emerald-400" />
-        <span className="text-sm">Loading your NEXTUP trajectory...</span>
+        <span className="text-sm">Loading your NXTUP trajectory...</span>
       </div>
     );
   }
 
   return (
     <div className="space-y-8">
-      {/* Top Banner with NEXTUP ID */}
+      {/* Top Banner with NXTUP ID */}
       <div className="glass-panel-glow rounded-2xl p-6 border-emerald-500/30 flex flex-wrap items-center justify-between gap-4">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
@@ -166,7 +166,7 @@ export const TraineeDashboard = () => {
         <div className="flex items-center gap-4">
           <div className="text-right">
             <div className="text-[10px] uppercase font-bold tracking-widest text-slate-400">
-              Unique NEXTUP ID
+              Unique NXTUP ID
             </div>
             <div className="text-xl font-mono font-black text-emerald-400">
               {profile?.nextup_id || profile?.skillpulse_id}
@@ -228,7 +228,7 @@ export const TraineeDashboard = () => {
         courseSkills={profile?.course_name ? [profile.course_name] : []}
       />
 
-      {/* NEXTUP ML Placement Risk & Targeted Interventions */}
+      {/* NXTUP ML Placement Risk & Targeted Interventions */}
       <PlacementRiskCard traineeId={profile?.id} onInterventionUpdated={fetchData} />
 
       {/* Salary & Wage Growth Chart */}

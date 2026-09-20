@@ -88,7 +88,7 @@ export const TraineeJourneyTracker = ({ profile, journey = [] }) => {
         </div>
         {(profile?.nextup_id || profile?.skillpulse_id) && (
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-900 border border-emerald-500/30 font-mono text-xs text-emerald-400 font-bold">
-            <span>NEXTUP ID:</span>
+            <span>NXTUP ID:</span>
             <span className="text-white">{profile.nextup_id || profile.skillpulse_id}</span>
           </div>
         )}

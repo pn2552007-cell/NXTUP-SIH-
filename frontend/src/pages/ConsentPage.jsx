@@ -45,7 +45,7 @@ export const ConsentPage = () => {
         consent_status: true,
         consent_version: 'v1.0',
         purpose: 'Longitudinal tracking of training, employment, retention, and wage progression',
-        consent_text: 'I voluntarily consent to NEXTUP tracking my longitudinal training and employment outcomes under DPDP Act framework.',
+        consent_text: 'I voluntarily consent to NXTUP tracking my longitudinal training and employment outcomes under DPDP Act framework.',
       });
 
       showSuccess(res.data.message);
@@ -87,7 +87,7 @@ export const ConsentPage = () => {
           Your Data, Your Consent.
         </h1>
         <p className="text-xs sm:text-sm text-slate-300 max-w-xl mx-auto">
-          NEXTUP strictly adheres to India's Digital Personal Data Protection (DPDP) Act. Explicit consent is mandatory to create your unified NEXTUP ID and initiate longitudinal outcome tracking.
+          NXTUP strictly adheres to India's Digital Personal Data Protection (DPDP) Act. Explicit consent is mandatory to create your unified NXTUP ID and initiate longitudinal outcome tracking.
         </p>
       </div>
 
@@ -96,7 +96,7 @@ export const ConsentPage = () => {
         <div className="glass-panel-glow rounded-2xl p-6 border-emerald-500/40 text-center space-y-3">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold">
             <Sparkles className="w-3.5 h-3.5" />
-            NEXTUP ID Activated
+            NXTUP ID Activated
           </div>
           <div className="text-3xl font-black font-mono tracking-wider text-white">
             {activeId}
@@ -130,7 +130,7 @@ export const ConsentPage = () => {
 
         {/* Informational Clauses */}
         <div className="space-y-3 text-xs text-slate-300 bg-slate-950/60 p-4 rounded-xl border border-slate-800/80 leading-relaxed">
-          <div className="font-semibold text-white">How NEXTUP Uses Your Skilling Information:</div>
+          <div className="font-semibold text-white">How NXTUP Uses Your Skilling Information:</div>
           <ul className="space-y-2 list-disc list-inside text-slate-400">
             <li>
               <strong>Training & Assessment Records:</strong> Connect your attendance, course completions, and assessment scores from accredited training providers.
@@ -160,7 +160,7 @@ export const ConsentPage = () => {
               className="mt-1 w-4 h-4 text-emerald-600 bg-slate-950 border-slate-600 rounded focus:ring-emerald-500"
             />
             <span className="text-xs text-slate-200 font-medium">
-              I voluntarily consent to NEXTUP tracking my training, employment, retention, and wage growth outcomes. I understand that I can review, update, or revoke my consent at any time.
+              I voluntarily consent to NXTUP tracking my training, employment, retention, and wage growth outcomes. I understand that I can review, update, or revoke my consent at any time.
             </span>
           </label>
         </div>
@@ -185,7 +185,7 @@ export const ConsentPage = () => {
               className="px-6 py-2.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white transition-all shadow-lg shadow-emerald-950 disabled:opacity-50 flex items-center gap-2"
             >
               <CheckCircle2 className="w-4 h-4" />
-              <span>{submitting ? 'Recording Consent...' : 'Grant Consent & Activate NEXTUP ID'}</span>
+              <span>{submitting ? 'Recording Consent...' : 'Grant Consent & Activate NXTUP ID'}</span>
             </button>
           )}
         </div>

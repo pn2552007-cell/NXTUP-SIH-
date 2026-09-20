@@ -15,7 +15,7 @@ load_dotenv(BACKEND_DIR / ".env", override=True)
 load_dotenv(".env", override=True)
 
 class Settings(BaseSettings):
-    PROJECT_NAME: str = "NEXTUP"
+    PROJECT_NAME: str = "NXTUP"
     PLATFORM_TITLE: str = "AI-Powered Skilling Outcome Platform"
     DEMO_PASSWORD: str = "NextUp@Demo2026!"
     API_V1_STR: str = "/api"

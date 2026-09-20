@@ -25,7 +25,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-950 text-slate-400 text-xs">
-        Authenticating NEXTUP Session...
+        Authenticating NXTUP Session...
       </div>
     );
   }

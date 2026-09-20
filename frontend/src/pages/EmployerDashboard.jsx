@@ -139,7 +139,7 @@ export const EmployerDashboard = () => {
           <table className="w-full text-left text-xs">
             <thead className="bg-slate-900/90 text-slate-400 uppercase font-mono text-[10px] border-b border-slate-800">
               <tr>
-                <th className="px-3 py-2.5">NEXTUP ID</th>
+                <th className="px-3 py-2.5">NXTUP ID</th>
                 <th className="px-3 py-2.5">Candidate Name</th>
                 <th className="px-3 py-2.5">Course Completed</th>
                 <th className="px-3 py-2.5">Reported Job Title</th>
@@ -198,7 +198,7 @@ export const EmployerDashboard = () => {
           <table className="w-full text-left text-xs">
             <thead className="bg-slate-900/90 text-slate-400 uppercase font-mono text-[10px] border-b border-slate-800">
               <tr>
-                <th className="px-3 py-2.5">NEXTUP ID</th>
+                <th className="px-3 py-2.5">NXTUP ID</th>
                 <th className="px-3 py-2.5">Candidate Name</th>
                 <th className="px-3 py-2.5">Job Title</th>
                 <th className="px-3 py-2.5">Joining Date</th>
@@ -265,7 +265,7 @@ export const EmployerDashboard = () => {
           <table className="w-full text-left text-xs">
             <thead className="bg-slate-900/90 text-slate-400 uppercase font-mono text-[10px] border-b border-slate-800">
               <tr>
-                <th className="px-3 py-2.5">NEXTUP ID</th>
+                <th className="px-3 py-2.5">NXTUP ID</th>
                 <th className="px-3 py-2.5">Course Completed</th>
                 <th className="px-3 py-2.5">Location</th>
                 <th className="px-3 py-2.5">Skills</th>

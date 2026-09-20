@@ -12,7 +12,7 @@ import {
 const SECTION_CONFIG = {
   '/admin/trainees': {
     title: 'Trainee Cohort Directory',
-    subtitle: 'Persistent NEXTUP ID profiles and longitudinal livelihood tracking.',
+    subtitle: 'Persistent NXTUP ID profiles and longitudinal livelihood tracking.',
     icon: UserCheck,
     fetcher: (params) => adminAPI.getTrainees(params),
   },
@@ -89,7 +89,7 @@ export const AdminSectionView = () => {
   const path = location.pathname;
   const config = SECTION_CONFIG[path] || {
     title: 'Admin Module',
-    subtitle: 'NEXTUP administrative management console.',
+    subtitle: 'NXTUP administrative management console.',
     icon: Shield,
     fetcher: () => adminAPI.getDashboard(),
   };
@@ -157,7 +157,7 @@ export const AdminSectionView = () => {
           <table className="w-full text-left text-xs">
             <thead className="bg-slate-900/90 text-slate-400 uppercase font-mono text-[10px] border-b border-slate-800">
               <tr>
-                <th className="px-3.5 py-3">NEXTUP ID</th>
+                <th className="px-3.5 py-3">NXTUP ID</th>
                 <th className="px-3.5 py-3">Trainee Name</th>
                 <th className="px-3.5 py-3">State / District</th>
                 <th className="px-3.5 py-3">Course / Provider</th>

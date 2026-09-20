@@ -87,7 +87,7 @@ export const RegisterPage = () => {
           <div className="inline-flex p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 mb-2">
             <Activity className="w-8 h-8" />
           </div>
-          <h2 className="text-2xl font-bold text-white tracking-tight">Create NEXTUP Account</h2>
+          <h2 className="text-2xl font-bold text-white tracking-tight">Create NXTUP Account</h2>
           <p className="text-xs text-slate-400">
             Join the national longitudinal outcome tracking platform.
           </p>

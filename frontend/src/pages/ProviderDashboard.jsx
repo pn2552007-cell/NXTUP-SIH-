@@ -346,7 +346,7 @@ export const ProviderDashboard = () => {
               Trainee Longitudinal Outcome Roster
             </h3>
             <p className="text-xs text-slate-400">
-              Real trainee cohort tracking with persistent NEXTUP IDs.
+              Real trainee cohort tracking with persistent NXTUP IDs.
             </p>
           </div>
 
@@ -368,7 +368,7 @@ export const ProviderDashboard = () => {
           <table className="w-full text-left text-xs">
             <thead className="bg-slate-900/90 text-slate-400 uppercase font-mono text-[10px] border-b border-slate-800">
               <tr>
-                <th className="px-3 py-2.5">NEXTUP ID</th>
+                <th className="px-3 py-2.5">NXTUP ID</th>
                 <th className="px-3 py-2.5">Trainee Name</th>
                 <th className="px-3 py-2.5">Course</th>
                 <th className="px-3 py-2.5 text-center">Training</th>

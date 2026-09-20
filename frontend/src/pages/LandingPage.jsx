@@ -35,14 +35,14 @@ export const LandingPage = () => {
           </div>
 
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-tight">
-            NEXTUP
+            NXTUP
             <span className="block text-2xl sm:text-3xl lg:text-4xl mt-2 font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400">
               AI-Powered Longitudinal Skilling Outcome Platform
             </span>
           </h1>
 
           <p className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
-            Bridging India's post-skilling data gap with persistent <strong>NEXTUP IDs</strong>, 
+            Bridging India's post-skilling data gap with persistent <strong>NXTUP IDs</strong>, 
             machine learning placement risk prediction, dual employer verification, and longitudinal wage retention tracking.
           </p>
 
@@ -68,7 +68,7 @@ export const LandingPage = () => {
           <div className="pt-10">
             <div className="glass-panel-glow rounded-2xl p-6 border border-emerald-500/20">
               <div className="text-xs uppercase font-bold tracking-widest text-emerald-400 mb-4 text-left">
-                Unified Longitudinal Outcome Pipeline (NEXTUP)
+                Unified Longitudinal Outcome Pipeline (NXTUP)
               </div>
               <div className="grid grid-cols-2 md:grid-cols-5 gap-3 text-left">
                 <div className="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1">
@@ -102,7 +102,7 @@ export const LandingPage = () => {
         </div>
       </section>
 
-      {/* Problem vs NEXTUP Solution */}
+      {/* Problem vs NXTUP Solution */}
       <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="glass-panel rounded-2xl p-8 border-rose-500/20 space-y-4">
@@ -132,13 +132,13 @@ export const LandingPage = () => {
 
           <div className="glass-panel rounded-2xl p-8 border-emerald-500/20 space-y-4">
             <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold uppercase tracking-wider">
-              <span>The NEXTUP Solution</span>
+              <span>The NXTUP Solution</span>
             </div>
             <h3 className="text-2xl font-bold text-white">AI-Powered Longitudinal Lifecycle</h3>
             <ul className="space-y-3 text-sm text-slate-300">
               <li className="flex items-start gap-2.5">
                 <span className="text-emerald-400 font-bold">•</span>
-                <span>Persistent NEXTUP ID connects training, certification, and verified employment across life.</span>
+                <span>Persistent NXTUP ID connects training, certification, and verified employment across life.</span>
               </li>
               <li className="flex items-start gap-2.5">
                 <span className="text-emerald-400 font-bold">•</span>
@@ -175,7 +175,7 @@ export const LandingPage = () => {
               </div>
               <h4 className="text-lg font-bold text-white">Trainee Portal</h4>
               <p className="text-xs text-slate-300 leading-relaxed">
-                Consent capture, unique NEXTUP ID, interactive milestone journey, AI placement risk score, targeted interventions, and wage charts.
+                Consent capture, unique NXTUP ID, interactive milestone journey, AI placement risk score, targeted interventions, and wage charts.
               </p>
             </div>
             <Link
@@ -213,7 +213,7 @@ export const LandingPage = () => {
               </div>
               <h4 className="text-lg font-bold text-white">Provider Portal</h4>
               <p className="text-xs text-slate-300 leading-relaxed">
-                Batch management, cohort risk monitoring, placement conversion analytics, and bulk CSV trainee batch ingestion with instant NEXTUP ID creation.
+                Batch management, cohort risk monitoring, placement conversion analytics, and bulk CSV trainee batch ingestion with instant NXTUP ID creation.
               </p>
             </div>
             <Link
@@ -313,7 +313,7 @@ export const LandingPage = () => {
             </div>
             <h3 className="text-xl font-bold text-white">Your Data, Your Consent</h3>
             <p className="text-xs text-slate-400 max-w-xl">
-              NEXTUP mandates explicit trainee consent before longitudinal tracking begins. Trainee records are pseudonymized, timestamped with version control, and auditable across all transactions.
+              NXTUP mandates explicit trainee consent before longitudinal tracking begins. Trainee records are pseudonymized, timestamped with version control, and auditable across all transactions.
             </p>
           </div>
           <Link

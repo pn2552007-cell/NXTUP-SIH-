@@ -240,7 +240,7 @@ export const PlacementRiskCard = ({ traineeId, onInterventionUpdated }) => {
 
             {interventions.length === 0 ? (
               <div className="p-4 rounded-xl bg-slate-950/60 border border-dashed border-slate-800 text-center text-xs text-slate-400">
-                No active intervention programs assigned yet. Click "Generate New Intervention" to let NEXTUP prescribe custom remedial sprints.
+                No active intervention programs assigned yet. Click "Generate New Intervention" to let NXTUP prescribe custom remedial sprints.
               </div>
             ) : (
               <div className="space-y-3">
@@ -316,7 +316,7 @@ export const PlacementRiskCard = ({ traineeId, onInterventionUpdated }) => {
             <span>
               Placement-risk model: PLANNED prototype trained on synthetic demo data. No accuracy is claimed.
             </span>
-            <span className="font-mono text-cyan-400">NEXTUP v1.0</span>
+            <span className="font-mono text-cyan-400">NXTUP v1.0</span>
           </div>
         </div>
       ) : null}

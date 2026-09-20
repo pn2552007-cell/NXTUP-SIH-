@@ -1,4 +1,4 @@
-# NEXTUP — AI-Powered Longitudinal Skilling Outcome Platform
+# NXTUP — AI-Powered Longitudinal Skilling Outcome Platform
 
 > **Smart India Hackathon 2026 (SIH 2026)**  
 > **Problem ID:** SIH26135  
@@ -11,7 +11,7 @@
 
 Across national skilling ecosystems (such as PMKVY, DGT, and State Skill Missions), tracking often terminates upon certification issuance. This creates a critical blindspot: **institutions lack verifiable data on whether graduates secure sustained employment, retain their jobs after 6–12 months, or achieve real wage progression.**
 
-**NEXTUP** solves this systemic challenge with an integrated, production-ready platform featuring:
+**NXTUP** solves this systemic challenge with an integrated, production-ready platform featuring:
 1. **Persistent Unified Trainee Identifier (`NXT-YYYY-XXXXXX`)** — A privacy-preserving national skilling ID that connects training, certification, employer verification, and career progression across a trainee's entire lifecycle.
 2. **Machine Learning Placement Risk Prediction** — A scikit-learn classification pipeline (RandomForest / GradientBoosting) that identifies at-risk trainees before course completion based on attendance, assessment scores, and skill gap telemetry.
 3. **Automated Remedial Intervention Engine** — Dynamically recommends targeted interventions (Mock Interviews, Bridge Courses, 1-on-1 Mentorship) with actionable sprint checklists.
@@ -23,11 +23,11 @@ Across national skilling ecosystems (such as PMKVY, DGT, and State Skill Mission
 
 ## ⚡ Implementation Status: Live vs Planned Roadmap
 
-To ensure academic and competition integrity, NEXTUP clearly delineates **live/implemented** capabilities from **future planned** roadmap integrations:
+To ensure academic and competition integrity, NXTUP clearly delineates **live/implemented** capabilities from **future planned** roadmap integrations:
 
 | Capability / Module | Status | Technical Implementation Details |
 | :--- | :---: | :--- |
-| **Persistent NEXTUP ID (`NXT-YYYY-XXXXXX`)** | <mark>**LIVE**</mark> | Deterministic cryptographic generator with checksum and database uniqueness constraints. |
+| **Persistent NXTUP ID (`NXT-YYYY-XXXXXX`)** | <mark>**LIVE**</mark> | Deterministic cryptographic generator with checksum and database uniqueness constraints. |
 | **ML Placement Risk Prediction Engine** | <mark>**LIVE**</mark> | Scikit-learn classification pipeline trained on structured skilling telemetry with explainable risk drivers. |
 | **Personalized Remedial Interventions** | <mark>**LIVE**</mark> | Rule-based & ML-assisted intervention generator with full lifecycle state management (`RECOMMENDED` → `IN_PROGRESS` → `COMPLETED`). |
 | **Dual-Party Employer Verification** | <mark>**LIVE**</mark> | Trainee self-report followed by employer payroll verification loop with confidence scoring. |
@@ -42,7 +42,7 @@ To ensure academic and competition integrity, NEXTUP clearly delineates **live/i
 ## 🏛 System Architecture
 
 ```
-nextup/
+nxtup/
 ├── backend/
 │   ├── alembic/                 # Database schema migrations
 │   ├── app/
@@ -79,7 +79,7 @@ nextup/
 ├── frontend/
 │   ├── src/
 │   │   ├── components/          # PlacementRiskCard, TraineeJourneyTracker, SkillGapCard, Recharts
-│   │   ├── contexts/            # AuthContext (token/user/nextup_id management), ToastContext
+│   │   ├── contexts/            # AuthContext (token/user/NXTUP ID management), ToastContext
 │   │   ├── layouts/             # DashboardLayout, AdminLayout, PublicLayout
 │   │   ├── pages/               # LandingPage, LoginPage, RegisterPage, ConsentPage, Dashboards
 │   │   └── services/            # Axios API client (/api)
@@ -147,16 +147,16 @@ The application includes 1-click quick-fill presets on the Login page for evalua
 
 | Persona / Role | Email | Password | Primary Capabilities |
 | :--- | :--- | :--- | :--- |
-| **🎓 Trainee** | `trainee@nextup.demo` | `NextUp@Demo2026!` | Unified NEXTUP ID, AI Placement Risk Score, Personalized Remedial Interventions, Wage Progression Tracker. |
+| **🎓 Trainee** | `trainee@nextup.demo` | `NextUp@Demo2026!` | Unified NXTUP ID, AI Placement Risk Score, Personalized Remedial Interventions, Wage Progression Tracker. |
 | **🏫 Training Provider** | `provider@nextup.demo` | `NextUp@Demo2026!` | Batch outcome rosters, cohort risk analytics, course completion metrics, bulk CSV trainee ingestion. |
 | **💼 Employer** | `employer@nextup.demo` | `NextUp@Demo2026!` | Verification queue for reported hires, salary/designation validation, consenting graduate candidate talent pool. |
-| **🏛️ Govt / Admin** | `admin@nextup.demo` | `NextUp@Demo2026!` | Macro outcome metrics (6-month retention %, wage growth %), ML model monitoring, district & sector impact rankings. |
+| **🏛️ Govt / Admin** | `pn2552007@gmail.com` | `[Configured Administrator Password]` | Macro outcome metrics (6-month retention %, wage growth %), ML model monitoring, district & sector impact rankings. |
 
 ---
 
 ## 🧪 Automated Testing
 
-NEXTUP includes an exhaustive automated test suite covering all authentication flows, ID generation formats, DPDP consent lifecycle, ML risk inference, and target jobs:
+NXTUP includes an exhaustive automated test suite covering all authentication flows, ID generation formats, DPDP consent lifecycle, ML risk inference, and target jobs:
 
 ```bash
 cd backend
@@ -177,4 +177,4 @@ python -m pytest tests/ -v
 ## 👥 Team Lumora (SIH 2026)
 - **Problem ID:** SIH26135
 - **Category:** Software / National Skilling & Workforce Development
-- **Project:** NEXTUP Longitudinal Skilling Outcome Platform
+- **Project:** NXTUP Longitudinal Skilling Outcome Platform

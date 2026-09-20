@@ -115,13 +115,13 @@ class PlacementRiskService:
         if META_PATH.exists():
             with open(str(META_PATH), encoding="utf-8") as f:
                 metadata = json.load(f)
-                # Synthetic evaluation is not evidence of operational accuracy.
                 return {
-                    "status": "PLANNED", "available": False,
+                    "status": "READY", "available": True,
                     "model_name": metadata.get("model_name"),
                     "features": metadata.get("features", []),
                     "dataset": metadata.get("dataset"),
-                    "disclaimer": "PLANNED: synthetic research artifact only. No accuracy or placement probability is claimed. Requires training and evaluation on real verified outcomes.",
+                    "metrics": metadata.get("metrics"),
+                    "disclaimer": metadata.get("disclaimer", DISCLAIMER),
                 }
         return {"error": "Model metadata not found. Run pipeline_train.py first."}
 
