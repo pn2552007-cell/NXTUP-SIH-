@@ -42,6 +42,7 @@ try:
     if user:
         print(f"User {TARGET_EMAIL} found. Current role: {user.role}")
         user.role = ADMIN_ROLE
+        user.is_active = True
         user.hashed_password = get_password_hash(ADMIN_PASSWORD)
         print("Updating user role to ADMIN and setting new password...")
     else:
@@ -50,7 +51,8 @@ try:
             email=TARGET_EMAIL,
             hashed_password=get_password_hash(ADMIN_PASSWORD),
             role=ADMIN_ROLE,
-            full_name="System Administrator"
+            full_name="System Administrator",
+            is_active=True
         )
         db.add(user)
         print("Creating new user with ADMIN role...")
@@ -63,3 +65,4 @@ except Exception as e:
     print(f"An error occurred: {e}")
 finally:
     db.close()
+
