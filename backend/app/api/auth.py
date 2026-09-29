@@ -1,5 +1,5 @@
-from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -117,7 +117,8 @@ def register(user_in: UserRegister, db: Session = Depends(get_db)):
 
 @router.post("/login", response_model=Token)
 def login(login_data: UserLogin, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.email == login_data.email).first()
+    clean_email = login_data.email.strip().lower()
+    user = db.query(User).filter(func.lower(User.email) == clean_email).first()
     if not user or not user.is_active or not verify_password(login_data.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

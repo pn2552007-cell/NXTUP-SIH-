@@ -17,7 +17,8 @@ from app.database import SessionLocal, engine, Base
 from app.models.models import (
     User, Trainee, Provider, Employer, Course, TrainingRecord, Assessment,
     Certification, Skill, TraineeSkill, EmploymentRecord, EmployerVerification,
-    Followup, WageHistory, SkillGapAnalysis, Consent, Intervention, Outcome, Job, JobRequirement
+    Followup, WageHistory, SkillGapAnalysis, Consent, Intervention, Outcome, Job, JobRequirement,
+    AuditLog, Enrollment, TrainingBatch
 )
 from app.auth.jwt_handler import get_password_hash
 from app.config import settings
@@ -30,12 +31,13 @@ def seed_database():
     db = SessionLocal()
 
     # ── Idempotency guard ──────────────────────────────────────────────────────
-    # If the canonical admin user already exists this database has been seeded
-    # before.  Bail out immediately so we never wipe production data on accident.
+    # Check whether the demo dataset already exists by looking for the primary demo trainee.
+    # Do NOT check the admin email (pn2552007@gmail.com) because the admin user may have
+    # been provisioned independently (e.g. via upsert_admin.py) before demo seeding.
     try:
-        existing_admin = db.query(User).filter(User.email == "pn2552007@gmail.com").first()
-        if existing_admin:
-            print("✅ Demo users already exist — seed skipped (idempotency guard).")
+        existing_demo_trainee = db.query(User).filter(User.email == "trainee@nextup.demo").first()
+        if existing_demo_trainee and os.environ.get("SEED_FORCE", "").strip() != "1":
+            print("✅ Demo users already exist (trainee@nextup.demo found) — seed skipped (idempotency guard).")
             db.close()
             return
     except Exception as probe_err:
@@ -44,31 +46,20 @@ def seed_database():
         db.rollback()
     # ──────────────────────────────────────────────────────────────────────────
 
-    # Clear existing demo data to ensure a clean state
+    # Clear existing demo data in FK-safe reverse order
     print("Cleaning existing NXTUP demo data...")
-    try:
-        db.query(Intervention).delete()
-        db.query(Outcome).delete()
-        db.query(JobRequirement).delete()
-        db.query(Job).delete()
-    except Exception:
-        db.rollback()
-    db.query(EmployerVerification).delete()
-    db.query(WageHistory).delete()
-    db.query(Followup).delete()
-    db.query(SkillGapAnalysis).delete()
-    db.query(EmploymentRecord).delete()
-    db.query(TraineeSkill).delete()
-    db.query(Certification).delete()
-    db.query(Assessment).delete()
-    db.query(TrainingRecord).delete()
-    db.query(Consent).delete()
-    db.query(Trainee).delete()
-    db.query(Course).delete()
-    db.query(Employer).delete()
-    db.query(Provider).delete()
-    db.query(Skill).delete()
-    db.query(User).delete()
+    models_to_clear = [
+        Intervention, Outcome, JobRequirement, Job,
+        EmployerVerification, WageHistory, Followup, SkillGapAnalysis,
+        EmploymentRecord, TraineeSkill, Certification, Assessment,
+        TrainingRecord, Enrollment, TrainingBatch, Consent,
+        AuditLog, Trainee, Course, Employer, Provider, Skill, User
+    ]
+    for model in models_to_clear:
+        try:
+            db.query(model).delete()
+        except Exception:
+            db.rollback()
     db.commit()
 
     hashed_pwd = get_password_hash(DEMO_PWD)

@@ -25,8 +25,11 @@ async def lifespan(app: FastAPI):
     #   1. Add env var  SEED_DB=1  in Render → Environment
     #   2. Trigger a Manual Deploy and watch the logs
     #   3. After "seeding complete" appears, DELETE the SEED_DB var and redeploy
-    if os.environ.get("SEED_DB", "").strip() == "1":
-        _logger.warning("SEED_DB=1 detected — running database seed...")
+    seed_flag = os.environ.get("SEED_DB", "").strip().lower()
+    if seed_flag in ("1", "true", "force"):
+        _logger.warning("SEED_DB flag detected (%s) — running database seed...", seed_flag)
+        if seed_flag == "force":
+            os.environ["SEED_FORCE"] = "1"
         try:
             from database.seed import seed_database
             seed_database()
