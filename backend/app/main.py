@@ -1,3 +1,6 @@
+import os
+import logging
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
@@ -8,12 +11,33 @@ from app.api.router import api_router
 from app.database import engine, Base
 import app.models.models  # ensure models are loaded for table creation
 
+_logger = logging.getLogger(__name__)
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Ensure all tables exist on startup
     Base.metadata.create_all(bind=engine)
     from app.services.schema_upgrade import upgrade_outcome_schema
     upgrade_outcome_schema(engine)
+
+    # ── Optional one-time seed (never runs unless SEED_DB=1 is set) ───────────
+    # To seed the production database:
+    #   1. Add env var  SEED_DB=1  in Render → Environment
+    #   2. Trigger a Manual Deploy and watch the logs
+    #   3. After "seeding complete" appears, DELETE the SEED_DB var and redeploy
+    if os.environ.get("SEED_DB", "").strip() == "1":
+        _logger.warning("SEED_DB=1 detected — running database seed...")
+        try:
+            from database.seed import seed_database
+            seed_database()
+            _logger.warning(
+                "✅ Database seeding complete. "
+                "IMPORTANT: Remove the SEED_DB environment variable now to prevent re-seeding on next restart."
+            )
+        except Exception as seed_err:
+            _logger.error("❌ Seeding failed: %s", seed_err, exc_info=True)
+    # ─────────────────────────────────────────────────────────────────────────
+
     yield
 
 app = FastAPI(

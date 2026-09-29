@@ -29,6 +29,21 @@ def seed_database():
     Base.metadata.create_all(bind=engine)
     db = SessionLocal()
 
+    # ── Idempotency guard ──────────────────────────────────────────────────────
+    # If the canonical admin user already exists this database has been seeded
+    # before.  Bail out immediately so we never wipe production data on accident.
+    try:
+        existing_admin = db.query(User).filter(User.email == "pn2552007@gmail.com").first()
+        if existing_admin:
+            print("✅ Demo users already exist — seed skipped (idempotency guard).")
+            db.close()
+            return
+    except Exception as probe_err:
+        # Tables may not exist yet on a brand-new DB — that's fine, continue.
+        print(f"   (idempotency probe skipped: {probe_err})")
+        db.rollback()
+    # ──────────────────────────────────────────────────────────────────────────
+
     # Clear existing demo data to ensure a clean state
     print("Cleaning existing NXTUP demo data...")
     try:
