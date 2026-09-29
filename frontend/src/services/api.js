@@ -8,6 +8,7 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  timeout: 12000, // 12 s — prevents indefinite hangs if backend is unreachable
 });
 
 // Interceptor to auto-inject Bearer token

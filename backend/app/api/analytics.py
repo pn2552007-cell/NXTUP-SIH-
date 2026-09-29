@@ -173,7 +173,9 @@ def get_skill_gaps_analytics(db: Session = Depends(get_db)):
     missing_counter = Counter()
     for a in analyses:
         for s in (a.missing_skills_json or []):
-            missing_counter[s] += 1
+            name = s.get("skill") if isinstance(s, dict) else s
+            if isinstance(name, str) and name.strip():
+                missing_counter[name.strip()] += 1
 
     avg_gap = round(sum(a.skill_gap_score for a in analyses) / len(analyses), 1)
 

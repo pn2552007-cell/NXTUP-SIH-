@@ -97,3 +97,65 @@ def test_analytics_endpoints_with_populated_data(client):
     dist_data = dist_res.json()
     assert len(dist_data) >= 1
     assert any(d["district"] == "Pune" for d in dist_data)
+
+
+def test_admin_skill_gaps_endpoint_handles_dict_skills_and_pagination(client, db_session):
+    from app.models.models import User, Trainee, SkillGapAnalysis
+    from app.auth.jwt_handler import get_password_hash, create_access_token
+
+    # 1. Create an admin user
+    admin_user = User(
+        email="skillgap_admin@nextup.org",
+        hashed_password=get_password_hash("Password123!"),
+        role="ADMIN",
+        full_name="SkillGap Admin",
+        is_active=True
+    )
+    db_session.add(admin_user)
+
+    # 2. Create a trainee and skill gap record with dict elements in matched_skills_json
+    trainee = Trainee(
+        full_name="Pooja Sharma",
+        email="pooja.sharma@example.com",
+        skillpulse_id="NXT-2026-999001",
+        state="Maharashtra",
+        district="Pune"
+    )
+    db_session.add(trainee)
+    db_session.flush()
+
+    gap_analysis = SkillGapAnalysis(
+        trainee_id=trainee.id,
+        target_role="Full Stack Developer",
+        skill_gap_score=25.0,
+        job_readiness=75.0,
+        matched_skills_json=[
+            {"skill": "JavaScript", "match_pct": 95, "proficiency": "ADVANCED"},
+            {"skill": "React", "match_pct": 90, "proficiency": "ADVANCED"}
+        ],
+        missing_skills_json=["Docker", {"skill": "Kubernetes"}],
+        recommended_skills_json=["Cloud Architecture"]
+    )
+    db_session.add(gap_analysis)
+    db_session.commit()
+
+    token = create_access_token(data={"sub": str(admin_user.id), "role": "ADMIN"})
+    headers = {"Authorization": f"Bearer {token}"}
+
+    # 3. Call GET /api/admin/skill-gaps with pagination query params
+    res = client.get("/api/admin/skill-gaps?page=1&per_page=15", headers=headers)
+    assert res.status_code == 200
+    data = res.json()
+    assert data["has_data"] is True
+    assert data["total_analyzed"] >= 1
+    assert data["total"] >= 1
+    assert data["page"] == 1
+    assert data["per_page"] == 15
+    assert "items" in data
+    assert len(data["items"]) >= 1
+    item = data["items"][0]
+    assert "target_role" in item
+    assert "skill_gap_score" in item
+    assert "missing_skills" in item
+    assert any(s["skill"] == "Docker" for s in data["top_missing_skills"])
+

@@ -921,10 +921,13 @@ def admin_followups(
 
 @router.get("/skill-gaps")
 def admin_skill_gap_analytics(
+    page: int = Query(1, ge=1),
+    per_page: int = Query(20, ge=1, le=100),
+    search: Optional[str] = None,
     current_user: User = Depends(admin_required),
     db: Session = Depends(get_db)
 ):
-    """Aggregated skill gap analytics from actual trainee records."""
+    """Aggregated skill gap analytics and paginated records from actual trainee records."""
     analyses = db.query(SkillGapAnalysis).all()
     all_skills = db.query(TraineeSkill).all()
 
@@ -938,16 +941,25 @@ def admin_skill_gap_analytics(
             "avg_job_readiness": None,
             "total_analyzed": 0,
             "total_trainees_with_skills": 0,
+            "total": 0,
+            "page": page,
+            "per_page": per_page,
+            "pages": 1,
+            "items": [],
         }
 
-    # Missing skills from gap analyses
+    # Missing and matched skills from gap analyses
     missing_counter = Counter()
     matched_counter = Counter()
     for a in analyses:
         for s in (a.missing_skills_json or []):
-            missing_counter[s] += 1
+            name = s.get("skill") if isinstance(s, dict) else s
+            if isinstance(name, str) and name.strip():
+                missing_counter[name.strip()] += 1
         for s in (a.matched_skills_json or []):
-            matched_counter[s] += 1
+            name = s.get("skill") if isinstance(s, dict) else s
+            if isinstance(name, str) and name.strip():
+                matched_counter[name.strip()] += 1
 
     # Possessed skills from trainee profiles
     possessed_counter = Counter()
@@ -969,6 +981,36 @@ def admin_skill_gap_analytics(
         for sk in (c.required_skills or []):
             skill_demand_counter[sk] += 1
 
+    # Paginated records for table view
+    q = db.query(SkillGapAnalysis)
+    if search:
+        matching_trainee_ids = [t.id for t in db.query(Trainee.id).filter(Trainee.full_name.ilike(f"%{search}%")).all()]
+        q = q.filter(
+            or_(
+                SkillGapAnalysis.target_role.ilike(f"%{search}%"),
+                SkillGapAnalysis.trainee_id.in_(matching_trainee_ids)
+            )
+        )
+
+    total = q.count()
+    paginated_analyses = q.order_by(desc(SkillGapAnalysis.created_at)).offset((page - 1) * per_page).limit(per_page).all()
+
+    rows = []
+    for a in paginated_analyses:
+        trainee = db.query(Trainee).filter(Trainee.id == a.trainee_id).first()
+        missing_list = [s.get("skill") if isinstance(s, dict) else str(s) for s in (a.missing_skills_json or [])]
+        rows.append({
+            "id": a.id,
+            "trainee_id": a.trainee_id,
+            "trainee_name": trainee.full_name if trainee else f"Trainee #{a.trainee_id}",
+            "skillpulse_id": (trainee.nextup_id or trainee.skillpulse_id) if trainee else f"NXT-{a.trainee_id}",
+            "target_role": a.target_role,
+            "job_readiness": f"{round(a.job_readiness, 1)}%" if a.job_readiness is not None else "—",
+            "skill_gap_score": round(a.skill_gap_score, 1) if a.skill_gap_score is not None else 0.0,
+            "missing_skills": ", ".join(missing_list[:5]) if missing_list else "None",
+            "created_at": a.created_at.strftime("%Y-%m-%d") if a.created_at else None,
+        })
+
     return {
         "has_data": True,
         "total_analyzed": len(analyses),
@@ -979,6 +1021,11 @@ def admin_skill_gap_analytics(
         "top_possessed_skills": [{"skill": s, "count": c} for s, c in possessed_counter.most_common(15)],
         "skill_demand_from_courses": [{"skill": s, "courses_requiring": c} for s, c in skill_demand_counter.most_common(15)],
         "top_target_roles": [{"role": r, "count": c} for r, c in role_counter.most_common(10)],
+        "total": total,
+        "page": page,
+        "per_page": per_page,
+        "pages": max(1, (total + per_page - 1) // per_page),
+        "items": rows,
     }
 
 

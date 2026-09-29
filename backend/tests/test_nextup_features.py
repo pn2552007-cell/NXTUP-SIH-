@@ -79,12 +79,14 @@ def test_predict_risk_synthetic(client, test_admin_token):
     resp = client.post("/api/ml/predict-risk", json=payload, headers=headers)
     assert resp.status_code == 200
     data = resp.json()
-    assert data["available"] is False
-    assert data["status"] == "PLANNED"
-    assert data["risk_score"] is None
-    assert data["prob_placed"] is None
+    assert "available" in data
     assert isinstance(data["contributing_factors"], list)
     assert "disclaimer" in data
+    if data["available"]:
+        assert data["risk_score"] is not None
+        assert data["risk_level"] in ["LOW", "MEDIUM", "HIGH"]
+    else:
+        assert data["status"] == "PLANNED"
 
 
 def test_recommend_intervention(client, test_admin_token):

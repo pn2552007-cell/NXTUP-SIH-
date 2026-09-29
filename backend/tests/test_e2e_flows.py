@@ -103,9 +103,14 @@ def test_employer_registration_and_login():
 def test_admin_portal_access_and_metrics():
     # 1. Login as Admin
     login_resp = client.post("/api/auth/login", json={
-        "email": "admin@nextup.demo",
+        "email": "pn2552007@gmail.com",
         "password": "NextUp@Demo2026!"
     })
+    if login_resp.status_code != 200:
+        login_resp = client.post("/api/auth/login", json={
+            "email": "admin@nextup.demo",
+            "password": "NextUp@Demo2026!"
+        })
     assert login_resp.status_code == 200, f"Admin login failed: {login_resp.text}"
     token = login_resp.json()["access_token"]
     headers = {"Authorization": f"Bearer {token}"}

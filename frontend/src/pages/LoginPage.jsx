@@ -30,8 +30,15 @@ export const LoginPage = () => {
     setSubmitting(true);
     setErrorMsg('');
 
+    // Safety net: always reset button after 15 seconds regardless of network state
+    const safetyTimer = setTimeout(() => {
+      setSubmitting(false);
+      setErrorMsg('Request timed out. Please check that the backend is running and try again.');
+    }, 15000);
+
     try {
       const user = await login(email, password);
+      clearTimeout(safetyTimer);
       addToast(`Welcome back, ${user.full_name}!`, 'success');
 
       // Route by role
@@ -51,10 +58,19 @@ export const LoginPage = () => {
         navigate('/');
       }
     } catch (err) {
-      const msg = err.response?.data?.detail || 'Authentication failed. Please check your credentials.';
+      clearTimeout(safetyTimer);
+      let msg = 'Authentication failed. Please check your credentials.';
+      if (err.code === 'ECONNABORTED' || err.message?.includes('timeout')) {
+        msg = 'Connection timed out. Please verify the backend server is running on port 8000.';
+      } else if (!err.response) {
+        msg = 'Cannot reach the server. Please verify the backend is running on port 8000.';
+      } else {
+        msg = err.response?.data?.detail || msg;
+      }
       setErrorMsg(msg);
       addToast(msg, 'error');
     } finally {
+      clearTimeout(safetyTimer);
       setSubmitting(false);
     }
   };
@@ -106,7 +122,7 @@ export const LoginPage = () => {
             </button>
             <button
               type="button"
-              onClick={() => handleQuickFill('pn2552007@gmail.com', '')}
+              onClick={() => handleQuickFill('pn2552007@gmail.com', 'NextUp@Demo2026!')}
               className="px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-cyan-500/40 text-slate-300 hover:text-white text-left transition-all flex items-center justify-between"
             >
               <span>🏛️ Admin</span>

@@ -32,6 +32,15 @@ const STATUS_STYLES = {
   TRAINING_PROVIDER:  'bg-cyan-500/15 text-cyan-300 border-cyan-500/30',
   TRAINEE:            'bg-blue-500/15 text-blue-300 border-blue-500/30',
   EMPLOYER:           'bg-indigo-500/15 text-indigo-300 border-indigo-500/30',
+  PROVIDER:           'bg-cyan-500/15 text-cyan-300 border-cyan-500/30',
+  SEARCHING:          'bg-amber-500/15 text-amber-300 border-amber-500/30',
+  NOT_LOOKING:        'bg-slate-500/15 text-slate-300 border-slate-500/30',
+  NOT_APPLICABLE:     'bg-slate-600/15 text-slate-400 border-slate-600/30',
+  ACTIVE:             'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
+  INACTIVE:           'bg-red-500/15 text-red-300 border-red-500/30',
+  CRITICAL:           'bg-red-500/15 text-red-300 border-red-500/30',
+  HIGH:               'bg-orange-500/15 text-orange-300 border-orange-500/30',
+  MODERATE:           'bg-amber-500/15 text-amber-300 border-amber-500/30',
 
   // Followups
   SCHEDULED:      'bg-blue-500/15 text-blue-300 border-blue-500/30',

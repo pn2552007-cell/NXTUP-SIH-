@@ -9,6 +9,9 @@ from sqlalchemy.pool import StaticPool
 os.environ["JWT_SECRET"] = "test-secret-key-for-skillpulse-automated-testing"
 os.environ["AI_API_KEY"] = ""  # Test safe fallback
 os.environ["AI_MODEL"] = "gemini-2.5-flash"
+os.environ["OPENBLAS_NUM_THREADS"] = "1"
+os.environ["MKL_NUM_THREADS"] = "1"
+os.environ["OMP_NUM_THREADS"] = "1"
 
 from app.database import Base, get_db
 from app.main import app
