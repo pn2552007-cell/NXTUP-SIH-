@@ -13,7 +13,7 @@ if str(BACKEND_DIR) not in sys.path:
     sys.path.insert(0, str(BACKEND_DIR))
 
 from app.config import settings
-from app.database import Base
+from app.database import Base, DATABASE_URL
 import app.models.models  # Ensure models are registered
 
 # this is the Alembic Config object, which provides
@@ -25,7 +25,7 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 # Overwrite sqlalchemy.url with the app setting
-config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
+config.set_main_option("sqlalchemy.url", DATABASE_URL)
 
 target_metadata = Base.metadata
 
